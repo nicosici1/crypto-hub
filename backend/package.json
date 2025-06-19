@@ -9,6 +9,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "axios": "^1.10.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
@@ -19,7 +20,12 @@
   "devDependencies": {
     "nodemon": "^2.0.22"
   },
-  "keywords": ["crypto", "api", "express", "mysql"],
+  "keywords": [
+    "crypto",
+    "api",
+    "express",
+    "mysql"
+  ],
   "author": "",
   "license": "ISC"
-} 
+}
