@@ -1,7 +1,6 @@
 <template>
   <div class="profile-manager">
     <div v-if="!user" class="flex flex-col items-center justify-center p-8 bg-gradient-to-br from-[#1a1c23] to-[#23242a] rounded-2xl shadow-2xl transform transition-all duration-500 hover:scale-[1.02]">
-      <!-- Login Form -->
       <div v-if="!showRegister" class="w-full max-w-md space-y-6">
         <div class="text-center mb-8">
           <h2 class="text-3xl font-bold text-white mb-2">Bienvenido de nuevo</h2>
@@ -49,7 +48,6 @@
         </div>
       </div>
 
-      <!-- Register Form -->
       <div v-else class="w-full max-w-md space-y-6">
         <div class="text-center mb-8">
           <h2 class="text-3xl font-bold text-white mb-2">Crear Cuenta</h2>
@@ -111,7 +109,6 @@
     </div>
 
     <div v-else class="bg-gradient-to-br from-[#1a1c23] to-[#23242a] rounded-2xl p-8 shadow-2xl">
-      <!-- Header del perfil -->
       <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
         <div class="flex items-center gap-4">
           <div class="relative group">
@@ -120,8 +117,9 @@
                 'w-20 h-20 rounded-full flex items-center justify-center text-3xl font-bold text-white cursor-pointer transition-all duration-300 hover:scale-105',
                 user?.avatar_type === 'emoji' ? 'bg-gradient-to-r from-[#16c784] to-[#13a06b]' : 
                 user?.avatar_type === 'image' ? '' : 
-                user?.avatar_color || 'bg-gradient-to-r from-[#16c784] to-[#13a06b]'
+                'bg-gradient-to-r from-[#16c784] to-[#13a06b]'
               ]"
+              :style="user?.avatar_type === 'initials' && user?.avatar_color ? { background: user.avatar_color } : {}"
               @click="showAvatarModal = true"
             >
               <img 
@@ -137,7 +135,6 @@
                 {{ user?.name?.charAt(0)?.toUpperCase() || '?' }}
               </span>
             </div>
-            <!-- Indicador de edición -->
             <div class="absolute -bottom-1 -right-1 bg-blue-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <svg class="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -162,7 +159,6 @@
         </button>
       </div>
 
-      <!-- Estadísticas principales -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div class="bg-[#161b22] rounded-xl p-6 transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
           <div class="flex items-center justify-between mb-4">
@@ -187,7 +183,6 @@
         </div>
       </div>
 
-      <!-- Sección de carteras -->
       <div class="mb-8">
         <h3 class="text-xl font-bold text-white mb-4">Mis Carteras</h3>
         <div v-if="userPortfolios.length === 0" class="text-gray-400">No tienes carteras.</div>
@@ -215,7 +210,6 @@
         </div>
       </div>
 
-      <!-- Sección de actividad reciente -->
       <div>
         <h3 class="text-xl font-bold text-white mb-4">Actividad Reciente</h3>
         <div class="bg-[#161b22] rounded-xl p-4">
@@ -262,10 +256,10 @@
       </div>
     </div>
 
-    <!-- Modal de edición de avatar -->
+
     <div v-if="showAvatarModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
       <div class="bg-[#23242a] rounded-2xl shadow-xl w-full max-w-md p-6 relative animate-fadeIn">
-        <!-- Botón cerrar -->
+
         <button 
           @click="showAvatarModal = false"
           class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
@@ -275,18 +269,17 @@
           </svg>
         </button>
 
-        <!-- Título -->
         <h2 class="text-xl font-bold text-white mb-6">Personalizar Avatar</h2>
 
-        <!-- Preview del avatar -->
         <div class="flex justify-center mb-6">
           <div 
             :class="[
               'w-24 h-24 rounded-full flex items-center justify-center text-4xl font-bold text-white',
               selectedAvatarType === 'emoji' ? 'bg-gradient-to-r from-[#16c784] to-[#13a06b]' : 
               selectedAvatarType === 'image' ? '' : 
-              selectedAvatarColor || 'bg-gradient-to-r from-[#16c784] to-[#13a06b]'
+              'bg-gradient-to-r from-[#16c784] to-[#13a06b]'
             ]"
+            :style="selectedAvatarType === 'initials' && selectedAvatarColor ? { background: selectedAvatarColor } : {}"
           >
             <img 
               v-if="selectedAvatarType === 'image' && selectedImageUrl" 
@@ -303,9 +296,7 @@
           </div>
         </div>
 
-        <!-- Opciones de avatar -->
         <div class="space-y-4">
-          <!-- Opción 1: Iniciales con colores -->
           <div>
             <h3 class="text-white font-medium mb-3">Iniciales con colores</h3>
             <div class="grid grid-cols-6 gap-2">
@@ -322,7 +313,6 @@
             </div>
           </div>
 
-          <!-- Opción 2: Emojis -->
           <div>
             <h3 class="text-white font-medium mb-3">Emojis</h3>
             <div class="grid grid-cols-8 gap-2">
@@ -340,7 +330,6 @@
             </div>
           </div>
 
-          <!-- Opción 3: Imagen personalizada -->
           <div>
             <h3 class="text-white font-medium mb-3">Imagen personalizada</h3>
             <div class="space-y-2">
@@ -362,7 +351,6 @@
           </div>
         </div>
 
-        <!-- Botones -->
         <div class="flex justify-end gap-2 mt-6">
           <button
             @click="showAvatarModal = false"
@@ -417,18 +405,18 @@ export default {
       selectedEmoji: null,
       selectedImageUrl: null,
       avatarColors: [
-        'bg-gradient-to-r from-[#16c784] to-[#13a06b]',
-        'bg-gradient-to-r from-blue-500 to-purple-600',
-        'bg-gradient-to-r from-purple-500 to-pink-500',
-        'bg-gradient-to-r from-pink-500 to-red-500',
-        'bg-gradient-to-r from-yellow-500 to-orange-500',
-        'bg-gradient-to-r from-indigo-500 to-purple-600',
-        'bg-gradient-to-r from-green-500 to-lime-500',
-        'bg-gradient-to-r from-cyan-500 to-blue-500',
-        'bg-gradient-to-r from-rose-500 to-pink-500',
-        'bg-gradient-to-r from-amber-500 to-yellow-500',
-        'bg-gradient-to-r from-violet-500 to-purple-500',
-        'bg-gradient-to-r from-slate-500 to-gray-600'
+        'linear-gradient(to right, #16c784, #13a06b)',
+        'linear-gradient(to right, #3b82f6, #7c3aed)',
+        'linear-gradient(to right, #8b5cf6, #ec4899)',
+        'linear-gradient(to right, #ec4899, #ef4444)',
+        'linear-gradient(to right, #eab308, #f97316)',
+        'linear-gradient(to right, #6366f1, #7c3aed)',
+        'linear-gradient(to right, #22c55e, #84cc16)',
+        'linear-gradient(to right, #06b6d4, #3b82f6)',
+        'linear-gradient(to right, #f43f5e, #ec4899)',
+        'linear-gradient(to right, #f59e0b, #eab308)',
+        'linear-gradient(to right, #8b5cf6, #a855f7)',
+        'linear-gradient(to right, #64748b, #4b5563)'
       ],
       popularEmojis: ['🚀', '🌟', '💰', '💸', '💪', '🌍', '🌐', '💻', '🎯', '🔥', '⚡', '🎨', '🎭', '🎪', '🎯', '🎲'],
       savingAvatar: false
@@ -459,21 +447,45 @@ export default {
           throw new Error(data.message || 'Error al iniciar sesión');
         }
 
-        // Guardar token y datos del usuario
         localStorage.setItem('token', data.token);
         localStorage.setItem('userId', data.user.id);
         localStorage.setItem('crypto-current-user', JSON.stringify(data.user));
         this.user = data.user;
+
+        const profileResponse = await fetch('http://localhost:3000/api/auth/profile', {
+          headers: {
+            'Authorization': `Bearer ${data.token}`
+          }
+        });
+        if (profileResponse.ok) {
+          const profileData = await profileResponse.json();
+          this.user = profileData.user;
+          localStorage.setItem('crypto-current-user', JSON.stringify(this.user));
+          await this.loadUserData();
+        }
+
+        if (this.$root.$notify) {
+          this.$root.$notify.success(data.message || '¡Bienvenido de vuelta!');
+        }
+
         this.$emit('login-success', data.user);
       } catch (error) {
-        alert(error.message);
+        if (this.$root.$notify) {
+          this.$root.$notify.error(error.message || 'Error al iniciar sesión');
+        } else {
+          alert(error.message);
+        }
       }
     },
     async register() {
       try {
         // Validar datos
         if (!this.registerData.name || !this.registerData.email || !this.registerData.password) {
-          alert('Por favor completa todos los campos');
+          if (this.$root.$notify) {
+            this.$root.$notify.error('Por favor completa todos los campos');
+          } else {
+            alert('Por favor completa todos los campos');
+          }
           return;
         }
 
@@ -491,20 +503,33 @@ export default {
           throw new Error(data.message || 'Error al registrar usuario');
         }
 
-        // Guardar token y datos del usuario
         localStorage.setItem('token', data.token);
         localStorage.setItem('userId', data.user.id);
         localStorage.setItem('crypto-current-user', JSON.stringify(data.user));
         this.user = data.user;
         this.showRegister = false;
+        
+        if (this.$root.$notify) {
+          this.$root.$notify.success(data.message || '¡Cuenta creada exitosamente!');
+        }
+        
         this.$emit('login-success', data.user);
       } catch (error) {
-        alert(error.message);
+        if (this.$root.$notify) {
+          this.$root.$notify.error(error.message || 'Error al registrar usuario');
+        } else {
+          alert(error.message);
+        }
       }
     },
     logout() {
       localStorage.removeItem('token');
       this.user = null;
+      
+      if (this.$root.$notify) {
+        this.$root.$notify.info('Has cerrado sesión correctamente');
+      }
+      
       this.$emit('logout');
     },
     getPortfolioGradient(id) {
@@ -563,7 +588,6 @@ export default {
       if (!this.user) return;
 
       try {
-        // Cargar carteras del usuario
         const portfoliosResponse = await fetch('http://localhost:3000/api/portfolios', {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -572,7 +596,6 @@ export default {
         const portfoliosData = await portfoliosResponse.json();
         this.userPortfolios = portfoliosData;
 
-        // Cargar transacciones del usuario
         const transactionsResponse = await fetch('http://localhost:3000/api/transactions', {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -581,23 +604,19 @@ export default {
         const transactionsData = await transactionsResponse.json();
         this.totalTransactions = transactionsData.length;
         
-        // Calcular activos únicos
         const uniqueSymbols = new Set(transactionsData.filter(tx => tx.coin && tx.coin.symbol).map(tx => tx.coin.symbol));
         this.uniqueAssets = uniqueSymbols.size;
         
-        // Obtener transacciones recientes (últimas 5)
         this.recentTransactions = transactionsData
           .sort((a, b) => new Date(b.date) - new Date(a.date))
           .slice(0, 5);
 
-        // Calcular valores de carteras después de cargar userPortfolios
         await this.calcularValoresCarteras();
       } catch (error) {
         console.error('Error al cargar datos del usuario:', error);
       }
     },
     async calcularValoresCarteras() {
-      // Calcula el valor total de cada cartera y lo guarda en carteraValores
       const token = localStorage.getItem('token');
       if (!token) return;
       const valores = {};
@@ -605,13 +624,11 @@ export default {
       const transaccionesPorCartera = {};
       for (const cartera of this.userPortfolios) {
         try {
-          // Obtener transacciones de la cartera
           const res = await fetch(`http://localhost:3000/api/transactions/portfolio/${cartera.id}`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           const transacciones = await res.json();
           console.log(`DEBUG: transacciones cartera ${cartera.id}`, transacciones);
-          // Agrupar y calcular activos
           const activosMap = {};
           for (const tx of transacciones) {
             if (!activosMap[tx.coin_id]) {
@@ -629,7 +646,6 @@ export default {
           const activosUsuario = Object.values(activosMap).filter(a => a.totalAmount > 0);
           let valorTotal = 0;
           if (activosUsuario.length > 0) {
-            // Obtener precios actuales
             const precios = await getBackendPrices(activosUsuario.map(a => a.coin_id));
             console.log(`DEBUG: precios cartera ${cartera.id}`, precios);
             for (const activo of activosUsuario) {
@@ -652,21 +668,12 @@ export default {
       console.log('DEBUG: carteraValores', this.carteraValores);
     },
     getCarteraValue(id) {
-      // Devuelve el valor calculado para cada cartera
       return this.carteraValores[id] ?? 0;
     },
     getTransaccionesPorCartera(carteraId) {
-      // Cuenta la cantidad real de transacciones para la cartera dada
-      // Busca en el backend o en el estado si tienes las transacciones cargadas
-      // Aquí lo hacemos consultando el backend de forma síncrona si no hay cache
-      // Pero para eficiencia, si tienes todas las transacciones en memoria, usa un filtro
-      // Por ahora, si tienes this.carteraValores, puedes usarlo como cache
-      // Si no, devuelve 0
       if (this.transaccionesPorCartera && this.transaccionesPorCartera[carteraId] !== undefined) {
         return this.transaccionesPorCartera[carteraId];
       }
-      // Si no hay cache, intenta contar en userPortfolios (si lo tienes)
-      // O devuelve 0
       return 0;
     },
     selectInitialsColor(color) {
@@ -680,27 +687,31 @@ export default {
     handleImageUpload(event) {
       const file = event.target.files[0];
       if (file) {
-        // Validar tipo
         if (!file.type.startsWith('image/')) {
-          alert('Por favor selecciona una imagen válida');
+          if (this.$root.$notify) {
+            this.$root.$notify.error('Por favor selecciona una imagen válida');
+          } else {
+            alert('Por favor selecciona una imagen válida');
+          }
           return;
         }
         
-        // Validar tamaño (máximo 5MB)
         if (file.size > 5 * 1024 * 1024) {
-          alert('La imagen debe ser menor a 5MB');
+          if (this.$root.$notify) {
+            this.$root.$notify.error('La imagen debe ser menor a 5MB');
+          } else {
+            alert('La imagen debe ser menor a 5MB');
+          }
           return;
         }
         
         const reader = new FileReader();
         reader.onload = (e) => {
-          // Comprimir imagen si es muy grande
           const img = new Image();
           img.onload = () => {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             
-            // Calcular nuevas dimensiones (máximo 500x500)
             let { width, height } = img;
             if (width > 500 || height > 500) {
               const ratio = Math.min(500 / width, 500 / height);
@@ -712,7 +723,6 @@ export default {
             canvas.height = height;
             ctx.drawImage(img, 0, 0, width, height);
             
-            // Convertir a base64 con calidad reducida
             const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
             this.selectedImageUrl = compressedDataUrl;
             this.selectedAvatarType = 'image';
@@ -744,25 +754,33 @@ export default {
           body: JSON.stringify(avatarData)
         });
 
+        const data = await response.json();
+
         if (!response.ok) {
-          throw new Error('Error al guardar el avatar');
+          throw new Error(data.message || 'Error al guardar el avatar');
         }
 
-        // Actualizar el usuario local
         if (this.user) {
           this.user = { ...this.user, ...avatarData };
           localStorage.setItem('crypto-current-user', JSON.stringify(this.user));
         }
 
         this.showAvatarModal = false;
-        // Resetear selecciones
         this.selectedAvatarType = null;
         this.selectedAvatarColor = null;
         this.selectedEmoji = null;
         this.selectedImageUrl = null;
+
+        if (this.$root.$notify) {
+          this.$root.$notify.success(data.message || 'Avatar actualizado correctamente');
+        }
       } catch (error) {
         console.error('Error al guardar el avatar:', error);
-        alert('Error al guardar el avatar. Por favor, intenta de nuevo.');
+        if (this.$root.$notify) {
+          this.$root.$notify.error(error.message || 'Error al guardar el avatar. Por favor, intenta de nuevo.');
+        } else {
+          alert('Error al guardar el avatar. Por favor, intenta de nuevo.');
+        }
       } finally {
         this.savingAvatar = false;
       }
@@ -771,20 +789,17 @@ export default {
   watch: {
     showAvatarModal(newVal) {
       if (newVal && this.user) {
-        // Inicializar selecciones basadas en el avatar actual
         this.selectedAvatarType = this.user.avatar_type || 'initials';
-        this.selectedAvatarColor = this.user.avatar_color || 'bg-gradient-to-r from-[#16c784] to-[#13a06b]';
+        this.selectedAvatarColor = this.user.avatar_color || 'linear-gradient(to right, #16c784, #13a06b)';
         this.selectedEmoji = this.user.avatar_emoji || null;
         this.selectedImageUrl = this.user.avatar_url || null;
       }
     }
   },
   async mounted() {
-    // Verificar si hay un token guardado
     const token = localStorage.getItem('token');
     if (token) {
       try {
-        // Cargar datos completos del usuario desde el backend
         const response = await fetch('http://localhost:3000/api/auth/profile', {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -797,7 +812,6 @@ export default {
           localStorage.setItem('crypto-current-user', JSON.stringify(this.user));
           this.loadUserData();
         } else {
-          // Si el token es inválido, limpiar localStorage
           localStorage.removeItem('token');
           localStorage.removeItem('crypto-current-user');
         }

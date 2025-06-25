@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const db = require('../config/database');
+const { pool } = require('../config/database');
 const auth = require('../middleware/auth');
 
 // Registro
@@ -10,40 +10,63 @@ router.post('/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
+    // Validaciones
+    if (!name || !email || !password) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Todos los campos son requeridos',
+        type: 'error'
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'La contraseña debe tener al menos 6 caracteres',
+        type: 'error'
+      });
+    }
+
     // Verificar si el email ya existe
-    const [existingUsers] = await db.pool.execute(
+    const [existingUsers] = await pool.execute(
       'SELECT * FROM users WHERE email = ?',
       [email]
     );
 
     if (existingUsers.length > 0) {
-      return res.status(400).json({ message: 'El email ya está registrado' });
+      return res.status(400).json({ 
+        success: false,
+        message: 'El email ya está registrado. Intenta con otro email o inicia sesión',
+        type: 'error'
+      });
     }
 
     // Hash de la contraseña
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Insertar usuario
-    const [result] = await db.pool.execute(
+    const [result] = await pool.execute(
       'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
       [name, email, hashedPassword]
     );
 
     // Crear cartera por defecto
-    await db.pool.execute(
+    await pool.execute(
       'INSERT INTO portfolios (user_id, name, is_default) VALUES (?, ?, ?)',
       [result.insertId, 'Mi Portfolio Principal', true]
     );
 
     // Generar token
     const token = jwt.sign(
-      { userId: result.insertId, email },
+      { id: result.insertId, email },
       process.env.JWT_SECRET || 'tu_secreto_jwt',
       { expiresIn: '24h' }
     );
 
     res.status(201).json({
-      message: 'Usuario creado exitosamente',
+      success: true,
+      message: `¡Bienvenido a Crypto Hub, ${name}! Tu cuenta ha sido creada exitosamente`,
+      type: 'success',
       token,
       user: {
         id: result.insertId,
@@ -52,8 +75,12 @@ router.post('/register', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al crear el usuario' });
+    console.error('❌ Error en registro:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error al crear la cuenta. Por favor, intenta nuevamente',
+      type: 'error'
+    });
   }
 });
 
@@ -62,14 +89,27 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // Validaciones
+    if (!email || !password) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Email y contraseña son requeridos',
+        type: 'error'
+      });
+    }
+
     // Buscar usuario
-    const [users] = await db.pool.execute(
+    const [users] = await pool.execute(
       'SELECT * FROM users WHERE email = ?',
       [email]
     );
 
     if (users.length === 0) {
-      return res.status(401).json({ message: 'Credenciales inválidas' });
+      return res.status(401).json({ 
+        success: false,
+        message: 'Email o contraseña incorrectos. Verifica tus credenciales',
+        type: 'error'
+      });
     }
 
     const user = users[0];
@@ -77,18 +117,24 @@ router.post('/login', async (req, res) => {
     // Verificar contraseña
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
-      return res.status(401).json({ message: 'Credenciales inválidas' });
+      return res.status(401).json({ 
+        success: false,
+        message: 'Email o contraseña incorrectos. Verifica tus credenciales',
+        type: 'error'
+      });
     }
 
     // Generar token
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
+      { id: user.id, email: user.email },
       process.env.JWT_SECRET || 'tu_secreto_jwt',
       { expiresIn: '24h' }
     );
 
     res.json({
-      message: 'Login exitoso',
+      success: true,
+      message: `¡Bienvenido de vuelta, ${user.name}! Has iniciado sesión correctamente`,
+      type: 'success',
       token,
       user: {
         id: user.id,
@@ -97,8 +143,12 @@ router.post('/login', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al iniciar sesión' });
+    console.error('❌ Error en login:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error al iniciar sesión. Por favor, intenta nuevamente',
+      type: 'error'
+    });
   }
 });
 
@@ -110,7 +160,11 @@ router.put('/users/avatar', auth, async (req, res) => {
 
     // Validar datos
     if (!avatar_type || !['initials', 'emoji', 'image'].includes(avatar_type)) {
-      return res.status(400).json({ message: 'Tipo de avatar inválido' });
+      return res.status(400).json({ 
+        success: false,
+        message: 'Tipo de avatar inválido',
+        type: 'error'
+      });
     }
 
     // Preparar datos para actualizar
@@ -122,21 +176,27 @@ router.put('/users/avatar', auth, async (req, res) => {
     };
 
     // Actualizar en la base de datos
-    const [result] = await db.pool.execute(
+    const [result] = await pool.execute(
       'UPDATE users SET avatar_type = ?, avatar_color = ?, avatar_emoji = ?, avatar_url = ? WHERE id = ?',
       [updateData.avatar_type, updateData.avatar_color, updateData.avatar_emoji, updateData.avatar_url, userId]
     );
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'Usuario no encontrado' });
+      return res.status(404).json({ 
+        success: false,
+        message: 'Usuario no encontrado',
+        type: 'error'
+      });
     }
 
     // Obtener usuario actualizado
-    const [users] = await db.pool.execute('SELECT * FROM users WHERE id = ?', [userId]);
+    const [users] = await pool.execute('SELECT * FROM users WHERE id = ?', [userId]);
     const updatedUser = users[0];
 
     res.json({
+      success: true,
       message: 'Avatar actualizado correctamente',
+      type: 'success',
       user: {
         id: updatedUser.id,
         name: updatedUser.name,
@@ -149,7 +209,11 @@ router.put('/users/avatar', auth, async (req, res) => {
     });
   } catch (error) {
     console.error('Error al actualizar avatar:', error);
-    res.status(500).json({ message: 'Error interno del servidor' });
+    res.status(500).json({ 
+      success: false,
+      message: 'Error al actualizar el avatar. Por favor, intenta nuevamente',
+      type: 'error'
+    });
   }
 });
 
@@ -159,15 +223,20 @@ router.get('/profile', auth, async (req, res) => {
     const userId = req.user.id;
 
     // Obtener usuario de la base de datos
-    const [users] = await db.pool.execute('SELECT * FROM users WHERE id = ?', [userId]);
+    const [users] = await pool.execute('SELECT * FROM users WHERE id = ?', [userId]);
     
     if (users.length === 0) {
-      return res.status(404).json({ message: 'Usuario no encontrado' });
+      return res.status(404).json({ 
+        success: false,
+        message: 'Usuario no encontrado',
+        type: 'error'
+      });
     }
 
     const user = users[0];
 
     res.json({
+      success: true,
       user: {
         id: user.id,
         name: user.name,
@@ -180,7 +249,11 @@ router.get('/profile', auth, async (req, res) => {
     });
   } catch (error) {
     console.error('Error al obtener perfil:', error);
-    res.status(500).json({ message: 'Error interno del servidor' });
+    res.status(500).json({ 
+      success: false,
+      message: 'Error al obtener el perfil. Por favor, intenta nuevamente',
+      type: 'error'
+    });
   }
 });
 

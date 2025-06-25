@@ -10,7 +10,6 @@ router.post('/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Verificar si el email ya existe
     const [existingUsers] = await db.pool.execute(
       'SELECT * FROM users WHERE email = ?',
       [email]
@@ -20,22 +19,18 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'El email ya está registrado' });
     }
 
-    // Hash de la contraseña
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Insertar usuario
     const [result] = await db.pool.execute(
       'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
       [name, email, hashedPassword]
     );
 
-    // Crear cartera por defecto
     await db.pool.execute(
       'INSERT INTO portfolios (user_id, name, is_default) VALUES (?, ?, ?)',
       [result.insertId, 'Mi Portfolio Principal', true]
     );
 
-    // Generar token
     const token = jwt.sign(
       { userId: result.insertId, email },
       process.env.JWT_SECRET || 'tu_secreto_jwt',
@@ -57,12 +52,10 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Login
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Buscar usuario
     const [users] = await db.pool.execute(
       'SELECT * FROM users WHERE email = ?',
       [email]
@@ -74,13 +67,11 @@ router.post('/login', async (req, res) => {
 
     const user = users[0];
 
-    // Verificar contraseña
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
       return res.status(401).json({ message: 'Credenciales inválidas' });
     }
 
-    // Generar token
     const token = jwt.sign(
       { userId: user.id, email: user.email },
       process.env.JWT_SECRET || 'tu_secreto_jwt',
@@ -102,18 +93,15 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Endpoint para actualizar avatar del usuario
 router.put('/users/avatar', auth, async (req, res) => {
   try {
     const { avatar_type, avatar_color, avatar_emoji, avatar_url } = req.body;
     const userId = req.user.id;
 
-    // Validar datos
     if (!avatar_type || !['initials', 'emoji', 'image'].includes(avatar_type)) {
       return res.status(400).json({ message: 'Tipo de avatar inválido' });
     }
 
-    // Preparar datos para actualizar
     const updateData = {
       avatar_type,
       avatar_color: avatar_type === 'initials' ? avatar_color : null,
@@ -121,7 +109,6 @@ router.put('/users/avatar', auth, async (req, res) => {
       avatar_url: avatar_type === 'image' ? avatar_url : null
     };
 
-    // Actualizar en la base de datos
     const [result] = await db.pool.execute(
       'UPDATE users SET avatar_type = ?, avatar_color = ?, avatar_emoji = ?, avatar_url = ? WHERE id = ?',
       [updateData.avatar_type, updateData.avatar_color, updateData.avatar_emoji, updateData.avatar_url, userId]
@@ -131,7 +118,6 @@ router.put('/users/avatar', auth, async (req, res) => {
       return res.status(404).json({ message: 'Usuario no encontrado' });
     }
 
-    // Obtener usuario actualizado
     const [users] = await db.pool.execute('SELECT * FROM users WHERE id = ?', [userId]);
     const updatedUser = users[0];
 
@@ -153,12 +139,10 @@ router.put('/users/avatar', auth, async (req, res) => {
   }
 });
 
-// Endpoint para obtener perfil del usuario actual
 router.get('/profile', auth, async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // Obtener usuario de la base de datos
     const [users] = await db.pool.execute('SELECT * FROM users WHERE id = ?', [userId]);
     
     if (users.length === 0) {

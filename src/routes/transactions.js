@@ -3,14 +3,12 @@ const router = express.Router();
 const pool = require('../config/database');
 const auth = require('../middleware/auth');
 
-// Obtener todas las transacciones del usuario
 router.get('/', auth, async (req, res) => {
   try {
     const [transactions] = await pool.execute(
       'SELECT * FROM transactions WHERE user_id = ? ORDER BY date DESC',
       [req.user.id]
     );
-    // Anidar objeto coin
     const transactionsWithCoin = transactions.map(tx => ({
       ...tx,
       coin: {
@@ -27,14 +25,12 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-// Obtener transacciones por cartera
 router.get('/portfolio/:portfolioId', auth, async (req, res) => {
   try {
     const [transactions] = await pool.execute(
       'SELECT * FROM transactions WHERE user_id = ? AND portfolio_id = ? ORDER BY date DESC',
       [req.user.id, req.params.portfolioId]
     );
-    // Anidar objeto coin
     const transactionsWithCoin = transactions.map(tx => ({
       ...tx,
       coin: {
@@ -51,7 +47,6 @@ router.get('/portfolio/:portfolioId', auth, async (req, res) => {
   }
 });
 
-// Crear nueva transacción
 router.post('/', auth, async (req, res) => {
   try {
     const {
@@ -139,7 +134,6 @@ router.put('/:id', auth, async (req, res) => {
   }
 });
 
-// Eliminar transacción
 router.delete('/:id', auth, async (req, res) => {
   try {
     const [result] = await pool.execute(
@@ -158,7 +152,6 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
-// Eliminar todas las transacciones de un activo en un portfolio
 router.delete('/', auth, async (req, res) => {
   const { portfolio_id, coin_id } = req.query;
   if (!portfolio_id || !coin_id) {

@@ -1,8 +1,7 @@
 <template>
   <div class="crypto-detail-view">
-    <h1>Detalle de Criptomoneda</h1>
-    <p>Aquí se mostrará la información detallada de la cripto seleccionada.</p>
-    <CryptoDetail />
+    
+    <CryptoDetail :coin-id="coinId" />
   </div>
 </template>
 
@@ -13,6 +12,11 @@ export default {
   name: 'CryptoDetailView',
   components: {
     CryptoDetail
+  },
+  computed: {
+    coinId() {
+      return this.$route.params.id;
+    }
   }
 }
 </script>

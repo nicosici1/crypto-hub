@@ -36,9 +36,11 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(coin, index) in filteredCoins" :key="coin.id" class="border-b border-[#23242a] hover:bg-[#23242a] transition">
-            <td class="py-3 px-4">
-              <button @click="toggleFavorite(coin.id)" :class="isFavorite(coin.id) ? 'text-yellow-400' : 'text-gray-400'">
+          <tr v-for="(coin, index) in filteredCoins" :key="coin.id" 
+              class="border-b border-[#23242a] hover:bg-[#23242a] transition cursor-pointer"
+              @click="goToDetail(coin.id)">
+            <td class="py-3 px-4" @click.stop="toggleFavorite(coin.id)">
+              <button :class="isFavorite(coin.id) ? 'text-yellow-400' : 'text-gray-400'">
                 <span v-if="isFavorite(coin.id)">★</span>
                 <span v-else>☆</span>
               </button>
@@ -79,7 +81,9 @@
     </div>
     <!-- Mobile Cards -->
     <div class="block sm:hidden mt-4 space-y-3">
-      <div v-for="(coin, index) in filteredCoins" :key="coin.id" class="bg-[#161b22] rounded-xl shadow p-4 w-full flex items-center gap-3">
+      <div v-for="(coin, index) in filteredCoins" :key="coin.id" 
+           class="bg-[#161b22] rounded-xl shadow p-4 w-full flex items-center gap-3 cursor-pointer hover:bg-[#23242a] transition"
+           @click="goToDetail(coin.id)">
         <span class="text-gray-400 font-bold w-5">{{ (page - 1) * perPage + index + 1 }}</span>
         <img :src="coin.image" :alt="coin.name" class="w-8 h-8 rounded-full bg-white shadow" />
         <div class="flex-1">
@@ -95,7 +99,7 @@
             <span v-if="coin.price_change_percentage_1h_in_currency > 0" class="text-green-400">▲</span>
             <span v-else-if="coin.price_change_percentage_1h_in_currency < 0" class="text-red-400">▼</span>
           </div>
-          <button @click="toggleFavorite(coin.id)" :class="isFavorite(coin.id) ? 'text-yellow-400' : 'text-gray-400'">
+          <button @click.stop="toggleFavorite(coin.id)" :class="isFavorite(coin.id) ? 'text-yellow-400' : 'text-gray-400'">
             <span v-if="isFavorite(coin.id)">★</span>
             <span v-else>☆</span>
           </button>
@@ -128,12 +132,24 @@
       </div>
     </div>
     <div v-if="loading" class="mt-4 text-gray-400 text-center">Cargando datos...</div>
-    <div v-if="error" class="mt-4 text-red-500 text-center">Error al cargar datos: {{ error }}</div>
+    <div v-if="error" class="mt-4 text-center">
+      <div class="text-red-500 mb-4">{{ error }}</div>
+      <button 
+        @click="retryFetch" 
+        class="px-6 py-3 bg-[#16c784] text-white font-bold rounded-lg hover:bg-[#13a06b] transition"
+      >
+        Reintentar
+      </button>
+    </div>
   </div>
 </template>
 
 <script>
 import { FavoritesService } from '../services/favorites';
+
+// Caché global para evitar requests duplicados
+const listCache = new Map();
+const LIST_CACHE_DURATION = 3 * 60 * 1000; // 3 minutos
 
 export default {
   name: 'CryptoList',
@@ -153,7 +169,9 @@ export default {
         { label: 'Perdedoras 24h', value: 'losers' },
         { label: 'Favoritas', value: 'favorites' }
       ],
-      favorites: []
+      favorites: [],
+      retryCount: 0,
+      maxRetries: 3
     }
   },
   computed: {
@@ -195,15 +213,51 @@ export default {
     async fetchCoins() {
       this.loading = true;
       this.error = null;
+      
+      // Verificar caché global
+      const cacheKey = `page_${this.page}`;
+      const cached = listCache.get(cacheKey);
+      if (cached && Date.now() - cached.timestamp < LIST_CACHE_DURATION) {
+        this.coins = cached.data;
+        this.total = 10000;
+        this.loading = false;
+        return;
+      }
+      
       try {
         const proxy = 'https://corsproxy.io/?';
         const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${this.perPage}&page=${this.page}&sparkline=true&price_change_percentage=1h%2C24h%2C7d`;
         const res = await fetch(proxy + encodeURIComponent(url));
+        
+        if (res.status === 429) {
+          // Rate limit - esperar y reintentar
+          if (this.retryCount < this.maxRetries) {
+            this.retryCount++;
+            const waitTime = Math.min(2000 * Math.pow(2, this.retryCount - 1), 10000); // Backoff exponencial, máximo 10s
+            console.log(`Rate limit alcanzado. Reintentando en ${waitTime}ms (intento ${this.retryCount}/${this.maxRetries})`);
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+            return this.fetchCoins();
+          } else {
+            throw new Error('Demasiadas solicitudes. Intenta de nuevo en unos minutos.');
+          }
+        }
+        
+        if (!res.ok) {
+          throw new Error(`Error ${res.status}: ${res.statusText}`);
+        }
+        
         const data = await res.json();
         this.coins = Array.isArray(data) ? data : [];
         this.total = 10000;
+        this.retryCount = 0; // Reset retry count on success
+        
+        // Guardar en caché global
+        listCache.set(cacheKey, {
+          data: this.coins,
+          timestamp: Date.now()
+        });
       } catch (e) {
-        this.error = e.message;
+        this.error = e.message || 'Error al cargar datos';
         this.coins = [];
       } finally {
         this.loading = false;
@@ -279,6 +333,12 @@ export default {
       const min = Math.min(...prices);
       const norm = prices.map(p => (p - min) / (max - min || 1));
       return norm.map((v, i) => `${i * (80 / (prices.length - 1))},${24 - v * 20}`).join(' ');
+    },
+    goToDetail(id) {
+      this.$router.push(`/moneda/${id}`);
+    },
+    async retryFetch() {
+      await this.fetchCoins();
     }
   },
   watch: {

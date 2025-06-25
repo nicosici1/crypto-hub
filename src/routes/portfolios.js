@@ -3,7 +3,6 @@ const router = express.Router();
 const pool = require('../config/database');
 const auth = require('../middleware/auth');
 
-// Obtener todas las carteras del usuario
 router.get('/', auth, async (req, res) => {
   try {
     const [portfolios] = await pool.execute(
@@ -17,7 +16,6 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-// Crear nueva cartera
 router.post('/', auth, async (req, res) => {
   try {
     const { name } = req.body;
@@ -37,7 +35,6 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
-// Actualizar cartera
 router.put('/:id', auth, async (req, res) => {
   try {
     const { name } = req.body;
@@ -55,7 +52,6 @@ router.put('/:id', auth, async (req, res) => {
   }
 });
 
-// Eliminar cartera
 router.delete('/:id', auth, async (req, res) => {
   try {
     const [result] = await pool.execute(

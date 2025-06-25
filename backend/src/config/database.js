@@ -10,11 +10,10 @@ const dbConfig = {
   ssl: process.env.DB_SSL === 'true' ? {
     rejectUnauthorized: false
   } : false,
-  // Configuraciones adicionales para mejor rendimiento
+  // Configuraciones para el pool de conexiones
   connectionLimit: 10,
-  acquireTimeout: 60000,
-  timeout: 60000,
-  reconnect: true
+  waitForConnections: true,
+  queueLimit: 0
 };
 
 // Crear pool de conexiones
@@ -24,22 +23,22 @@ const pool = mysql.createPool(dbConfig);
 const testConnection = async () => {
   try {
     const connection = await pool.getConnection();
-    console.log('✅ Conexión a la base de datos establecida correctamente');
-    console.log('📊 Configuración:', {
-      host: dbConfig.host,
-      database: dbConfig.database,
-      port: dbConfig.port
-    });
     connection.release();
     return true;
   } catch (error) {
-    console.error('❌ Error conectando a la base de datos:', error.message);
+    console.error('Error conectando a la base de datos:', error.message);
     return false;
   }
 };
 
-module.exports = {
-  pool,
-  dbConfig,
-  testConnection
-}; 
+// Probar conexión al cargar el módulo
+(async () => {
+  try {
+    await testConnection();
+  } catch (error) {
+    console.error('Error al conectar con la base de datos:', error);
+    process.exit(1);
+  }
+})();
+
+module.exports = { pool, testConnection }; 

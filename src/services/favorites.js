@@ -32,6 +32,19 @@ export const FavoritesService = {
     }
   },
 
+  async isFavorite(coin_id) {
+    const token = localStorage.getItem('token');
+    if (!token) return false;
+    
+    try {
+      const favorites = await this.getFavorites();
+      return favorites.some(fav => fav.coin_id === coin_id);
+    } catch (error) {
+      console.error('Error al verificar favorito:', error);
+      return false;
+    }
+  },
+
   async addFavorite(coin_id) {
     const token = localStorage.getItem('token');
     if (!token) return null;

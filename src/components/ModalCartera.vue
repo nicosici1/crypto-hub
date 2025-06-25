@@ -116,17 +116,31 @@ export default {
           await backendApi.put(`/portfolios/${this.cartera.id}`, data, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
+          
+          if (this.$root.$notify) {
+            this.$root.$notify.success('Cartera actualizada correctamente');
+          }
         } else {
           await backendApi.post('/portfolios', data, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
+          
+          if (this.$root.$notify) {
+            this.$root.$notify.success('Cartera creada correctamente');
+          }
         }
 
         this.$emit('saved');
         this.$emit('close');
       } catch (error) {
         console.error('Error al guardar la cartera:', error);
-        this.error = error.response?.data?.message || 'Error al guardar la cartera';
+        const errorMessage = error.response?.data?.message || 'Error al guardar la cartera';
+        
+        if (this.$root.$notify) {
+          this.$root.$notify.error(errorMessage);
+        } else {
+          this.error = errorMessage;
+        }
       } finally {
         this.loading = false;
       }

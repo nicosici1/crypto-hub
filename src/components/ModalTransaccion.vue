@@ -176,17 +176,29 @@ export default {
     async saveTransaction() {
       try {
         if (!this.selectedCoin) {
-          this.error = 'Por favor selecciona una criptomoneda';
+          if (this.$root.$notify) {
+            this.$root.$notify.error('Por favor selecciona una criptomoneda');
+          } else {
+            this.error = 'Por favor selecciona una criptomoneda';
+          }
           return;
         }
 
         if (!this.amount || this.amount <= 0) {
-          this.error = 'Por favor ingresa una cantidad válida';
+          if (this.$root.$notify) {
+            this.$root.$notify.error('Por favor ingresa una cantidad válida');
+          } else {
+            this.error = 'Por favor ingresa una cantidad válida';
+          }
           return;
         }
 
         if (!this.price || this.price <= 0) {
-          this.error = 'Por favor ingresa un precio válido';
+          if (this.$root.$notify) {
+            this.$root.$notify.error('Por favor ingresa un precio válido');
+          } else {
+            this.error = 'Por favor ingresa un precio válido';
+          }
           return;
         }
 
@@ -215,20 +227,26 @@ export default {
 
         if (this.editTx) {
           await TransactionService.updateTransaction(this.editTx.id, transaction);
+          if (this.$root.$notify) {
+            this.$root.$notify.success('Transacción actualizada correctamente');
+          }
         } else {
           await TransactionService.addTransaction(transaction);
+          if (this.$root.$notify) {
+            this.$root.$notify.success('Transacción agregada correctamente');
+          }
         }
         
         this.$emit('transaction-saved');
         this.$emit('close');
       } catch (error) {
         console.error('Error al guardar la transacción:', error);
-        if (error.response?.data?.message) {
-          this.error = error.response.data.message;
-        } else if (error.message) {
-          this.error = error.message;
+        const errorMessage = error.response?.data?.message || error.message || 'Error al guardar la transacción. Por favor, intenta de nuevo.';
+        
+        if (this.$root.$notify) {
+          this.$root.$notify.error(errorMessage);
         } else {
-          this.error = 'Error al guardar la transacción. Por favor, intenta de nuevo.';
+          this.error = errorMessage;
         }
       }
     },

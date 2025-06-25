@@ -1,16 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../config/database');
+const { pool } = require('../config/database');
 const auth = require('../middleware/auth');
 
 // Obtener todas las transacciones del usuario
 router.get('/', auth, async (req, res) => {
   try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: 'Usuario no autenticado' });
+    }
+
     const [transactions] = await pool.execute(
       'SELECT * FROM transactions WHERE user_id = ? ORDER BY date DESC',
       [req.user.id]
     );
-    // Anidar objeto coin
+
+    // Anidar objeto coin como antes
     const transactionsWithCoin = transactions.map(tx => ({
       ...tx,
       coin: {
@@ -20,10 +25,11 @@ router.get('/', auth, async (req, res) => {
         image: tx.coin_image
       }
     }));
+
     res.json(transactionsWithCoin);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al obtener las transacciones' });
+    console.error('Error al obtener transacciones:', error);
+    res.status(500).json({ message: 'Error interno del servidor' });
   }
 });
 

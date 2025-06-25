@@ -4,7 +4,6 @@ const pool = require('../config/database');
 const jwt = require('jsonwebtoken');
 const auth = require('../middleware/auth');
 
-// Middleware de autenticación
 const authMiddleware = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -25,7 +24,6 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-// Obtener favoritos
 router.get('/', auth, async (req, res) => {
   try {
     console.log('Obteniendo favoritos para usuario:', req.user.id);
@@ -41,7 +39,6 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-// Agregar favorito
 router.post('/', auth, async (req, res) => {
   try {
     const { coin_id } = req.body;
@@ -65,7 +62,6 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
-// Eliminar favorito
 router.delete('/:coinId', auth, async (req, res) => {
   try {
     const [result] = await pool.execute(

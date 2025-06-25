@@ -11,7 +11,6 @@
       </button>
     </div>
     <div v-else>
-      <!-- Mini-modal de confirmación de eliminación -->
       <div v-if="showDeleteModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
         <div class="bg-[#23242a] rounded-2xl shadow-xl w-full max-w-sm p-6 relative animate-fadeIn">
           <h2 class="text-xl font-bold text-white mb-4">Eliminar activo</h2>
@@ -29,7 +28,6 @@
         @saved="onTxEdited"
       />
       
-      <!-- Tabla de activos -->
       <div v-if="isLoading" class="flex justify-center items-center py-12">
         <div class="w-8 h-8 border-2 border-gray-600 border-t-blue-500 rounded-full animate-spin"></div>
       </div>
@@ -71,7 +69,6 @@
               :key="asset.id"
               class="border-b border-gray-800/20 hover:bg-gray-800/10 transition-colors group"
             >
-              <!-- NOMBRE -->
               <td class="py-3 px-4">
                 <div class="flex items-center gap-3">
                   <img v-if="asset.image" :src="asset.image" :alt="asset.name" class="w-8 h-8 rounded-full bg-white shadow" />
@@ -88,12 +85,10 @@
                 </div>
               </td>
               
-              <!-- ALERTAS (ahora PRECIO ACTUAL) -->
               <td class="py-3 px-3 text-right">
                 <div class="text-white font-medium text-sm">{{ formatCurrency(asset.current_price) }}</div>
               </td>
               
-              <!-- 1H% -->
               <td class="py-3 px-3 text-right">
                 <div :class="[
                   'flex items-center justify-end gap-1 text-xs font-medium',
@@ -106,7 +101,6 @@
                 </div>
               </td>
               
-              <!-- 24H% -->
               <td class="py-3 px-3 text-right">
                 <div :class="[
                   'flex items-center justify-end gap-1 text-xs font-medium',
@@ -119,7 +113,6 @@
                 </div>
               </td>
               
-              <!-- 7D% -->
               <td class="py-3 px-3 text-right">
                 <div :class="[
                   'flex items-center justify-end gap-1 text-xs font-medium',
@@ -132,18 +125,15 @@
                 </div>
               </td>
               
-              <!-- INVERSIONES -->
               <td class="py-3 px-4 text-right">
                 <div class="text-white font-medium text-sm">{{ formatCurrency(asset.totalInvested) }}</div>
                 <div class="text-xs text-gray-400">{{ formatNumber(asset.totalAmount) }} {{ (asset.symbol || '?').toUpperCase() }}</div>
               </td>
               
-              <!-- PRECIO PROMEDIO DE COMPRA -->
               <td class="py-3 px-4 text-right">
                 <div class="text-white font-medium text-sm">{{ formatCurrency(asset.averagePrice) }}</div>
               </td>
               
-              <!-- GANANCIA/PÉRDIDA -->
               <td class="py-3 px-4 text-right">
                 <div :class="[
                   'font-medium flex items-center justify-end gap-1 text-sm',
@@ -162,7 +152,6 @@
                 </div>
               </td>
               
-              <!-- ACCIONES -->
               <td class="py-3 px-4 text-center">
                 <div class="flex items-center justify-center gap-1">
                   <button 

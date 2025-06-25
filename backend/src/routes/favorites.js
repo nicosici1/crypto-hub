@@ -1,43 +1,24 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../config/database');
-const jwt = require('jsonwebtoken');
+const { pool } = require('../config/database');
 const auth = require('../middleware/auth');
-
-// Middleware de autenticación
-const authMiddleware = (req, res, next) => {
-  try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(401).json({ message: 'No autorizado' });
-    }
-
-    const token = authHeader.split(' ')[1];
-    if (!token) {
-      return res.status(401).json({ message: 'No autorizado' });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'tu_secreto_jwt');
-    req.user = decoded;
-    next();
-  } catch (error) {
-    return res.status(401).json({ message: 'No autorizado' });
-  }
-};
 
 // Obtener favoritos
 router.get('/', auth, async (req, res) => {
   try {
-    console.log('Obteniendo favoritos para usuario:', req.user.id);
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: 'Usuario no autenticado' });
+    }
+
     const [rows] = await pool.execute(
-      'SELECT * FROM favorites WHERE user_id = ?',
+      'SELECT * FROM favorites WHERE user_id = ? ORDER BY created_at DESC',
       [req.user.id]
     );
-    console.log('Favoritos encontrados:', rows);
+
     res.json(rows);
   } catch (error) {
     console.error('Error al obtener favoritos:', error);
-    res.status(500).json({ message: 'Error al obtener favoritos' });
+    res.status(500).json({ message: 'Error interno del servidor' });
   }
 });
 
@@ -45,23 +26,23 @@ router.get('/', auth, async (req, res) => {
 router.post('/', auth, async (req, res) => {
   try {
     const { coin_id } = req.body;
-    console.log('Agregando favorito:', { userId: req.user.id, coinId: coin_id });
+    
+    if (!coin_id) {
+      return res.status(400).json({ message: 'coin_id es requerido' });
+    }
+
     const [result] = await pool.execute(
       'INSERT INTO favorites (user_id, coin_id) VALUES (?, ?)',
       [req.user.id, coin_id]
     );
-    console.log('Favorito agregado:', result);
-    res.status(201).json({
-      id: result.insertId,
-      user_id: req.user.id,
-      coin_id
+
+    res.status(201).json({ 
+      message: 'Favorito agregado correctamente',
+      id: result.insertId 
     });
   } catch (error) {
     console.error('Error al agregar favorito:', error);
-    if (error.code === 'ER_DUP_ENTRY') {
-      return res.status(400).json({ message: 'Esta criptomoneda ya está en favoritos' });
-    }
-    res.status(500).json({ message: 'Error al agregar a favoritos' });
+    res.status(500).json({ message: 'Error interno del servidor' });
   }
 });
 

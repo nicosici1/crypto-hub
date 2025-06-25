@@ -4,14 +4,19 @@
     <main class="max-w-[1400px] mx-auto w-full px-4 sm:px-2 pt-6 pb-10">
       <router-view/>
     </main>
+    <NotificationToast />
   </div>
 </template>
 
 <script>
 import AppNavbar from './components/Navbar.vue'
+import NotificationToast from './components/NotificationToast.vue'
 
 export default {
   name: 'App',
-  components: { AppNavbar }
+  components: { 
+    AppNavbar,
+    NotificationToast
+  }
 }
 </script>
