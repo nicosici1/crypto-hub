@@ -323,6 +323,8 @@ import ModalCartera from '../components/ModalCartera.vue';
 import { TransactionService } from '../services/transactions';
 import { getBackendPrices } from '../services/api';
 
+const API_URL = process.env.VUE_APP_API_URL;
+
 export default {
   name: 'PortfolioView',
   components: { PortfolioManager, ModalTransaccion, ModalCartera },
@@ -362,7 +364,7 @@ export default {
         if (!token) throw new Error('No autorizado');
 
         // Obtener carteras del usuario
-        const response = await fetch('http://localhost:3000/api/portfolios', {
+        const response = await fetch(`${API_URL}/portfolios`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -387,7 +389,7 @@ export default {
       for (const cartera of this.carteras) {
         try {
           // Obtener transacciones de la cartera
-          const res = await fetch(`http://localhost:3000/api/transactions/portfolio/${cartera.id}`, {
+          const res = await fetch(`${API_URL}/transactions/portfolio/${cartera.id}`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           const transacciones = await res.json();

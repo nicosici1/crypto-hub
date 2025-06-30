@@ -59,6 +59,8 @@
 import { TransactionService } from '../services/transactions';
 import dayjs from 'dayjs';
 
+const API_URL = process.env.VUE_APP_API_URL;
+
 export default {
   name: 'ModalTransaccion',
   props: {
@@ -138,7 +140,7 @@ export default {
     async fetchCoins() {
       try {
         // Pide las top 100 monedas al backend
-        const res = await fetch('http://localhost:3000/api/prices');
+        const res = await fetch(`${API_URL}/prices`);
         const data = await res.json();
         this.coins = data;
         // Si hay una cripto seleccionada, seleccionarla automáticamente

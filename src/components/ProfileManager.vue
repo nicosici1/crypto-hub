@@ -380,6 +380,9 @@
 
 <script>
 import { getBackendPrices } from '../services/api';
+
+const API_URL = process.env.VUE_APP_API_URL;
+
 export default {
   name: 'ProfileManager',
   data() {
@@ -430,7 +433,7 @@ export default {
   methods: {
     async login() {
       try {
-        const response = await fetch('http://localhost:3000/api/auth/login', {
+        const response = await fetch(`${API_URL}/auth/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -452,7 +455,7 @@ export default {
         localStorage.setItem('crypto-current-user', JSON.stringify(data.user));
         this.user = data.user;
 
-        const profileResponse = await fetch('http://localhost:3000/api/auth/profile', {
+        const profileResponse = await fetch(`${API_URL}/auth/profile`, {
           headers: {
             'Authorization': `Bearer ${data.token}`
           }
@@ -489,7 +492,7 @@ export default {
           return;
         }
 
-        const response = await fetch('http://localhost:3000/api/auth/register', {
+        const response = await fetch(`${API_URL}/auth/register`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -588,7 +591,7 @@ export default {
       if (!this.user) return;
 
       try {
-        const portfoliosResponse = await fetch('http://localhost:3000/api/portfolios', {
+        const portfoliosResponse = await fetch(`${API_URL}/portfolios`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -596,7 +599,7 @@ export default {
         const portfoliosData = await portfoliosResponse.json();
         this.userPortfolios = portfoliosData;
 
-        const transactionsResponse = await fetch('http://localhost:3000/api/transactions', {
+        const transactionsResponse = await fetch(`${API_URL}/transactions`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
@@ -624,7 +627,7 @@ export default {
       const transaccionesPorCartera = {};
       for (const cartera of this.userPortfolios) {
         try {
-          const res = await fetch(`http://localhost:3000/api/transactions/portfolio/${cartera.id}`, {
+          const res = await fetch(`${API_URL}/transactions/portfolio/${cartera.id}`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           const transacciones = await res.json();
@@ -745,7 +748,7 @@ export default {
           avatar_url: this.selectedAvatarType === 'image' ? this.selectedImageUrl : null
         };
 
-        const response = await fetch('http://localhost:3000/api/auth/users/avatar', {
+        const response = await fetch(`${API_URL}/auth/users/avatar`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -800,7 +803,7 @@ export default {
     const token = localStorage.getItem('token');
     if (token) {
       try {
-        const response = await fetch('http://localhost:3000/api/auth/profile', {
+        const response = await fetch(`${API_URL}/auth/profile`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
