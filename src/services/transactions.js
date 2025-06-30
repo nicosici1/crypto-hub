@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL + '/transactions';
+const API_URL = process.env.VUE_APP_API_URL + '/transactions';
 
 // Crear una instancia de axios con configuración personalizada
 const api = axios.create({

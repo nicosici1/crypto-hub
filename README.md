@@ -258,7 +258,7 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE.md](LICENSE.m
 
 ## 👨‍💻 Autor
 
-**Tu Nombre** - [tu-email@ejemplo.com](mailto:tu-email@ejemplo.com)
+Nicolás Siciliano - [nicolas.siciliano.dev@gmail.com]
 
 ---
 
