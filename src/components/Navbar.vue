@@ -5,7 +5,6 @@
       <div class="flex items-center gap-6 flex-shrink-0">
         <router-link to="/" class="flex items-center gap-2">
           <img src="/favicon.ico" alt="CryptoHub Logo" class="w-8 h-8" />
-          <span class="ml-2 text-xl font-bold text-white select-none">Crypto<strong>Hub</strong></span>
         </router-link>
         <router-link to="/" exact class="text-white font-semibold text-base px-3 py-1 rounded-md transition hover:bg-[#23242a] hover:text-[#16c784]" active-class="text-[#16c784] bg-[#23242a]">Cryptocurrencies</router-link>
       </div>
