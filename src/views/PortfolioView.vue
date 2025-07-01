@@ -45,8 +45,8 @@
                     </svg>
                   </button>
                 </div>
-                <span v-if="cartera.esDefault || cartera.is_default" class="bg-blue-500/20 text-blue-400 text-xs px-1.5 py-0.5 rounded border border-blue-500/30">
-                  Default
+                <span v-if="cartera.esDefault || cartera.is_default" class="bg-blue-500/20 text-blue-400 text-xs px-2 py-0.5 rounded border border-blue-500/30">
+                  Por defecto
                 </span>
               </div>
               <div class="flex items-center gap-1 mt-0.5">
@@ -81,7 +81,7 @@
             <div>
               <div class="flex items-center gap-2">
                 <h1 class="text-white text-xl font-semibold">{{ carteraActiva?.name || carteraActiva?.nombre || 'Mi Portfolio Principal' }}</h1>
-                <span v-if="carteraActiva?.esDefault || carteraActiva?.is_default" class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full font-medium">Default</span>
+                <span v-if="carteraActiva?.esDefault || carteraActiva?.is_default" class="bg-blue-500 text-white text-xs px-3 py-1 rounded-full font-medium">Por defecto</span>
               </div>
             </div>
           </div>

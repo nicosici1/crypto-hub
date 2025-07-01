@@ -3,9 +3,10 @@
     <nav class="max-w-[1400px] mx-auto px-4 flex items-center h-16 w-full">
       <!-- Logo y Cryptocurrencies a la izquierda -->
       <div class="flex items-center gap-6 flex-shrink-0">
-        <div class="flex items-center gap-2">
+        <router-link to="/" class="flex items-center gap-2">
+          <img src="/public/favicon.ico" alt="CryptoHub Logo" class="w-8 h-8" />
           <span class="ml-2 text-xl font-bold text-white select-none">Crypto<strong>Hub</strong></span>
-        </div>
+        </router-link>
         <router-link to="/" exact class="text-white font-semibold text-base px-3 py-1 rounded-md transition hover:bg-[#23242a] hover:text-[#16c784]" active-class="text-[#16c784] bg-[#23242a]">Cryptocurrencies</router-link>
       </div>
       <div class="flex-1"></div>
