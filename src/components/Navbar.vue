@@ -6,26 +6,26 @@
         <router-link to="/" class="flex items-center gap-2">
           <img src="/favicon.ico" alt="CryptoHub Logo" class="w-8 h-8" />
         </router-link>
-        <router-link to="/" exact class="text-white font-semibold text-base px-3 py-1 rounded-md transition hover:bg-[#23242a] hover:text-[#16c784]" active-class="text-[#16c784] bg-[#23242a]">Cryptocurrencies</router-link>
+        <router-link to="/" exact class="hidden sm:inline-block text-white font-semibold text-base px-3 py-1 rounded-md transition hover:bg-[#AFA] hover:text-[#222]" active-class="text-[#16c784] bg-[#23242a]">Cryptocurrencies</router-link>
       </div>
       <div class="flex-1"></div>
       <!-- Menú desktop -->
       <div class="hidden sm:flex items-center gap-5 sm:gap-2 mt-0 sm:mt-2">
-        <router-link to="/portfolio" class="text-white font-semibold text-base px-3 py-1 rounded-md transition hover:bg-[#23242a] hover:text-[#16c784]" active-class="text-[#16c784] bg-[#23242a]">
+        <router-link to="/portfolio" class="text-white font-semibold text-base px-3 py-1 rounded-md transition hover:bg-[#AFA] hover:text-[#222]" active-class="text-[#16c784] bg-[#23242a]">
           <svg class="inline w-5 h-5 mr-1 -mt-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align: middle;">
             <rect x="3" y="7" width="18" height="13" rx="2" stroke="currentColor" stroke-width="2" fill="none"/>
             <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" stroke="currentColor" stroke-width="2" fill="none"/>
           </svg>
           Portafolio
         </router-link>
-        <router-link to="/favoritas" class="text-white font-semibold text-base px-3 py-1 rounded-md transition hover:bg-[#23242a] hover:text-[#16c784] relative" active-class="text-[#16c784] bg-[#23242a]">
+        <router-link to="/favoritas" class="text-white font-semibold text-base px-3 py-1 rounded-md transition hover:bg-[#AFA] hover:text-[#222] relative" active-class="text-[#16c784] bg-[#23242a]">
           <svg class="inline w-5 h-5 mr-1 -mt-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align: middle;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" stroke="currentColor" stroke-width="2" fill="none"/></svg>
           Seguimiento
         </router-link>
-        <router-link to="/perfil" class="text-white font-semibold text-base px-3 py-1 rounded-md transition hover:bg-[#23242a] hover:text-[#16c784]" active-class="text-[#16c784] bg-[#23242a]">
+        <router-link to="/perfil" class="text-white font-semibold text-base px-3 py-1 rounded-md transition hover:bg-[#AFA] hover:text-[#222]" active-class="text-[#16c784] bg-[#23242a]">
           Perfil
         </router-link>
-        <button v-if="isLoggedIn" @click="logout" class="ml-1 p-1 rounded-full hover:bg-[#23242a] transition" style="line-height: 1;" title="Cerrar sesión">
+        <button v-if="isLoggedIn" @click="logout" class="ml-1 p-1 rounded-full hover:bg-[#AFA] transition" style="line-height: 1;" title="Cerrar sesión">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 hover:text-red-400 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
@@ -40,22 +40,22 @@
     <!-- Menú mobile -->
     <transition name="fade">
       <div v-if="menuOpen" class="sm:hidden bg-[#161b22] border-t border-[#23242a] px-6 py-4 flex flex-col gap-2 animate-fadeIn absolute w-full left-0 top-16 z-30 shadow-lg">
-        <router-link @click="closeMenu" to="/" exact class="text-white font-semibold text-base px-3 py-2 rounded-md transition hover:bg-[#23242a] hover:text-[#16c784]" active-class="text-[#16c784] bg-[#23242a]">Cryptocurrencies</router-link>
-        <router-link @click="closeMenu" to="/portfolio" class="text-white font-semibold text-base px-3 py-2 rounded-md transition hover:bg-[#23242a] hover:text-[#16c784]" active-class="text-[#16c784] bg-[#23242a]">
+        <router-link @click="closeMenu" to="/" exact class="sm:hidden text-white font-semibold text-base px-3 py-2 rounded-md transition hover:bg-[#AFA] hover:text-[#222]" active-class="text-[#16c784] bg-[#23242a]">Cryptocurrencies</router-link>
+        <router-link @click="closeMenu" to="/portfolio" class="text-white font-semibold text-base px-3 py-2 rounded-md transition hover:bg-[#AFA] hover:text-[#222]" active-class="text-[#16c784] bg-[#23242a]">
           <svg class="inline w-5 h-5 mr-1 -mt-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align: middle;">
             <rect x="3" y="7" width="18" height="13" rx="2" stroke="currentColor" stroke-width="2" fill="none"/>
             <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" stroke="currentColor" stroke-width="2" fill="none"/>
           </svg>
           Portafolio
         </router-link>
-        <router-link @click="closeMenu" to="/favoritas" class="text-white font-semibold text-base px-3 py-2 rounded-md transition hover:bg-[#23242a] hover:text-[#16c784] relative" active-class="text-[#16c784] bg-[#23242a]">
+        <router-link @click="closeMenu" to="/favoritas" class="text-white font-semibold text-base px-3 py-2 rounded-md transition hover:bg-[#AFA] hover:text-[#222] relative" active-class="text-[#16c784] bg-[#23242a]">
           <svg class="inline w-5 h-5 mr-1 -mt-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align: middle;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" stroke="currentColor" stroke-width="2" fill="none"/></svg>
           Seguimiento
         </router-link>
-        <router-link @click="closeMenu" to="/perfil" class="text-white font-semibold text-base px-3 py-2 rounded-md transition hover:bg-[#23242a] hover:text-[#16c784]" active-class="text-[#16c784] bg-[#23242a]">
+        <router-link @click="closeMenu" to="/perfil" class="text-white font-semibold text-base px-3 py-2 rounded-md transition hover:bg-[#AFA] hover:text-[#222]" active-class="text-[#16c784] bg-[#23242a]">
           Perfil
         </router-link>
-        <button v-if="isLoggedIn" @click="logout" class="ml-1 p-1 rounded-full hover:bg-[#23242a] transition" style="line-height: 1;" title="Cerrar sesión">
+        <button v-if="isLoggedIn" @click="logout" class="ml-1 p-1 rounded-full hover:bg-[#AFA] transition" style="line-height: 1;" title="Cerrar sesión">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 hover:text-red-400 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
