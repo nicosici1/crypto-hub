@@ -22,8 +22,23 @@
           <svg class="inline w-5 h-5 mr-1 -mt-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align: middle;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" stroke="currentColor" stroke-width="2" fill="none"/></svg>
           Seguimiento
         </router-link>
-        <router-link to="/perfil" class="text-white font-semibold text-base px-3 py-1 rounded-md transition hover:bg-[#AFA] hover:text-[#222]" active-class="text-[#16c784] bg-[#23242a]">
-          Perfil
+        <router-link to="/perfil" class="text-white font-semibold text-base px-3 py-1 rounded-md transition hover:bg-[#AFA] hover:text-[#222] flex items-center justify-center" active-class="text-[#16c784] bg-[#23242a]">
+          <template v-if="user">
+            <span v-if="user.avatar_type === 'image' && user.avatar_url">
+              <img :src="user.avatar_url" alt="Avatar" class="w-8 h-8 rounded-full object-cover border-2 border-[#AFA]" />
+            </span>
+            <span v-else-if="user.avatar_type === 'emoji' && user.avatar_emoji" class="text-2xl">
+              {{ user.avatar_emoji }}
+            </span>
+            <span v-else class="w-8 h-8 rounded-full bg-[#23242a] flex items-center justify-center text-lg font-bold border-2 border-[#AFA]">
+              {{ user.name ? user.name.charAt(0).toUpperCase() : '?' }}
+            </span>
+          </template>
+          <template v-else>
+            <svg class="w-7 h-7 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </template>
         </router-link>
         <button v-if="isLoggedIn" @click="logout" class="ml-1 p-1 rounded-full hover:bg-[#AFA] transition" style="line-height: 1;" title="Cerrar sesión">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 hover:text-red-400 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -52,8 +67,23 @@
           <svg class="inline w-5 h-5 mr-1 -mt-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align: middle;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" stroke="currentColor" stroke-width="2" fill="none"/></svg>
           Seguimiento
         </router-link>
-        <router-link @click="closeMenu" to="/perfil" class="text-white font-semibold text-base px-3 py-2 rounded-md transition hover:bg-[#AFA] hover:text-[#222]" active-class="text-[#16c784] bg-[#23242a]">
-          Perfil
+        <router-link @click="closeMenu" to="/perfil" class="text-white font-semibold text-base px-3 py-2 rounded-md transition hover:bg-[#AFA] hover:text-[#222] flex items-center justify-center" active-class="text-[#16c784] bg-[#23242a]">
+          <template v-if="user">
+            <span v-if="user.avatar_type === 'image' && user.avatar_url">
+              <img :src="user.avatar_url" alt="Avatar" class="w-8 h-8 rounded-full object-cover border-2 border-[#AFA]" />
+            </span>
+            <span v-else-if="user.avatar_type === 'emoji' && user.avatar_emoji" class="text-2xl">
+              {{ user.avatar_emoji }}
+            </span>
+            <span v-else class="w-8 h-8 rounded-full bg-[#23242a] flex items-center justify-center text-lg font-bold border-2 border-[#AFA]">
+              {{ user.name ? user.name.charAt(0).toUpperCase() : '?' }}
+            </span>
+          </template>
+          <template v-else>
+            <svg class="w-7 h-7 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </template>
         </router-link>
         <button v-if="isLoggedIn" @click="logout" class="ml-1 p-1 rounded-full hover:bg-[#AFA] transition" style="line-height: 1;" title="Cerrar sesión">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400 hover:text-red-400 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
