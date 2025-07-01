@@ -14,7 +14,7 @@
       </button>
     </div>
     
-    <div v-else-if="coin" class="max-w-7xl mx-auto p-6">
+    <div v-else-if="coin" class="max-w-7xl mx-auto p-6 sm:p-8 w-full">
       <!-- Header con navegación -->
       <div class="flex items-center gap-4 mb-8">
         <button @click="$router.go(-1)" class="flex items-center gap-2 text-gray-400 hover:text-white transition">
@@ -26,26 +26,24 @@
       </div>
 
       <!-- Información principal -->
-      <div class="bg-[#161b22] rounded-2xl p-8 mb-8">
-        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-          <div class="flex items-center gap-4">
+      <div class="bg-[#161b22] rounded-2xl p-4 sm:p-8 mb-8 w-full">
+        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 w-full">
+          <div class="flex items-center gap-4 w-full">
             <img :src="coin.image?.large" :alt="coin.name" class="w-16 h-16 rounded-full bg-white shadow-lg" />
             <div>
               <h1 class="text-3xl font-bold text-white mb-1">{{ coin.name }}</h1>
               <p class="text-gray-400 text-lg">{{ coin.symbol?.toUpperCase() }}</p>
             </div>
           </div>
-          
-          <div class="flex items-center gap-4">
+          <div class="flex flex-col sm:flex-row items-stretch gap-2 w-full sm:w-auto mt-4 sm:mt-0">
             <button @click="toggleFavorite" :class="[
-              'px-4 py-2 rounded-lg transition flex items-center gap-2',
+              'px-4 py-2 rounded-lg transition flex items-center gap-2 w-full sm:w-auto justify-center',
               isFavorite ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' : 'bg-[#23242a] text-gray-400 hover:text-white'
             ]">
               <span>{{ isFavorite ? '★' : '☆' }}</span>
               {{ isFavorite ? 'En favoritos' : 'Agregar a favoritos' }}
             </button>
-            
-            <button @click="addToPortfolio" class="px-6 py-2 bg-[#16c784] text-white rounded-lg hover:bg-[#13a06b] transition flex items-center gap-2">
+            <button @click="addToPortfolio" class="px-6 py-2 bg-[#16c784] text-white rounded-lg hover:bg-[#13a06b] transition flex items-center gap-2 w-full sm:w-auto justify-center">
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
               </svg>
