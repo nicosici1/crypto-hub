@@ -9,7 +9,7 @@
         :class="[
           'px-4 py-1 rounded font-semibold transition',
           filter === f.value
-            ? 'bg-[#16c784] text-white font-bold shadow hover:bg-[#13a06b]'
+            ? 'bg-[#AFA] text-[#222] font-bold shadow hover:bg-[#bfffbf]'
             : 'bg-[#23242a] text-gray-200 hover:bg-[#2d2f36]'
         ]"
       >
@@ -57,20 +57,26 @@
               <span class="uppercase text-xs text-gray-400 ml-1">{{ coin.symbol }}</span>
             </td>
             <td class="py-3 px-4 font-mono">${{ formatNumber(coin.current_price) }}</td>
-            <td class="py-3 px-4 font-mono" :class="getClass(coin.price_change_percentage_1h_in_currency) + ' ' + (coin.price_change_percentage_1h_in_currency > 0 ? 'text-[#16c784]' : coin.price_change_percentage_1h_in_currency < 0 ? 'text-[#ea3943]' : 'text-gray-400')">
-              {{ formatPercent(coin.price_change_percentage_1h_in_currency) }}
-              <span v-if="coin.price_change_percentage_1h_in_currency > 0">▲</span>
-              <span v-else-if="coin.price_change_percentage_1h_in_currency < 0">▼</span>
+            <td class="py-3 px-4 font-mono" :class="getClass(coin.price_change_percentage_1h_in_currency) + ' ' + (coin.price_change_percentage_1h_in_currency > 0 ? 'text-[#AFA]' : coin.price_change_percentage_1h_in_currency < 0 ? 'text-[#ea3943]' : 'text-gray-400')">
+              <span class="inline-flex items-center gap-1">
+                {{ formatPercent(coin.price_change_percentage_1h_in_currency) }}
+                <span v-if="coin.price_change_percentage_1h_in_currency > 0" class="text-xs align-middle">▲</span>
+                <span v-else-if="coin.price_change_percentage_1h_in_currency < 0" class="text-xs align-middle">▼</span>
+              </span>
             </td>
-            <td class="py-3 px-4 font-mono" :class="getClass(coin.price_change_percentage_24h_in_currency) + ' ' + (coin.price_change_percentage_24h_in_currency > 0 ? 'text-[#16c784]' : coin.price_change_percentage_24h_in_currency < 0 ? 'text-[#ea3943]' : 'text-gray-400')">
-              {{ formatPercent(coin.price_change_percentage_24h_in_currency) }}
-              <span v-if="coin.price_change_percentage_24h_in_currency > 0">▲</span>
-              <span v-else-if="coin.price_change_percentage_24h_in_currency < 0">▼</span>
+            <td class="py-3 px-4 font-mono" :class="getClass(coin.price_change_percentage_24h_in_currency) + ' ' + (coin.price_change_percentage_24h_in_currency > 0 ? 'text-[#AFA]' : coin.price_change_percentage_24h_in_currency < 0 ? 'text-[#ea3943]' : 'text-gray-400')">
+              <span class="inline-flex items-center gap-1">
+                {{ formatPercent(coin.price_change_percentage_24h_in_currency) }}
+                <span v-if="coin.price_change_percentage_24h_in_currency > 0" class="text-xs align-middle">▲</span>
+                <span v-else-if="coin.price_change_percentage_24h_in_currency < 0" class="text-xs align-middle">▼</span>
+              </span>
             </td>
-            <td class="py-3 px-4 font-mono" :class="getClass(coin.price_change_percentage_7d_in_currency) + ' ' + (coin.price_change_percentage_7d_in_currency > 0 ? 'text-[#16c784]' : coin.price_change_percentage_7d_in_currency < 0 ? 'text-[#ea3943]' : 'text-gray-400')">
-              {{ formatPercent(coin.price_change_percentage_7d_in_currency) }}
-              <span v-if="coin.price_change_percentage_7d_in_currency > 0">▲</span>
-              <span v-else-if="coin.price_change_percentage_7d_in_currency < 0">▼</span>
+            <td class="py-3 px-4 font-mono" :class="getClass(coin.price_change_percentage_7d_in_currency) + ' ' + (coin.price_change_percentage_7d_in_currency > 0 ? 'text-[#AFA]' : coin.price_change_percentage_7d_in_currency < 0 ? 'text-[#ea3943]' : 'text-gray-400')">
+              <span class="inline-flex items-center gap-1">
+                {{ formatPercent(coin.price_change_percentage_7d_in_currency) }}
+                <span v-if="coin.price_change_percentage_7d_in_currency > 0" class="text-xs align-middle">▲</span>
+                <span v-else-if="coin.price_change_percentage_7d_in_currency < 0" class="text-xs align-middle">▼</span>
+              </span>
             </td>
             <td class="py-3 px-4 font-mono">${{ formatNumber(coin.market_cap) }}</td>
             <td class="py-3 px-4 font-mono">${{ formatNumber(coin.total_volume) }}</td>
@@ -129,7 +135,7 @@
             :class="[
               'px-3 py-1 rounded font-bold transition',
               pageNum === page 
-                ? 'bg-[#16c784] text-white' 
+                ? 'bg-[#AFA] text-[#222] border border-[#AFA]' 
                 : 'bg-[#23242a] text-gray-200 hover:bg-[#2d2f36]'
             ]"
           >
