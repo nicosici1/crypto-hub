@@ -28,8 +28,8 @@ router.post('/register', async (req, res) => {
     }
 
     // Verificar si el email ya existe
-    const [existingUsers] = await pool.execute(
-      'SELECT * FROM users WHERE email = ?',
+    const { rows: existingUsers } = await pool.query(
+      'SELECT * FROM users WHERE email = $1',
       [email]
     );
 
@@ -45,20 +45,20 @@ router.post('/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Insertar usuario
-    const [result] = await pool.execute(
-      'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
+    const { rows: insertedUser } = await pool.query(
+      'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id',
       [name, email, hashedPassword]
     );
 
     // Crear cartera por defecto
-    await pool.execute(
-      'INSERT INTO portfolios (user_id, name, is_default) VALUES (?, ?, ?)',
-      [result.insertId, 'Mi Portfolio Principal', true]
+    await pool.query(
+      'INSERT INTO portfolios (user_id, name, is_default) VALUES ($1, $2, $3)',
+      [insertedUser[0].id, 'Mi Portfolio Principal', true]
     );
 
     // Generar token
     const token = jwt.sign(
-      { id: result.insertId, email },
+      { id: insertedUser[0].id, email },
       process.env.JWT_SECRET || 'tu_secreto_jwt',
       { expiresIn: '24h' }
     );
@@ -69,7 +69,7 @@ router.post('/register', async (req, res) => {
       type: 'success',
       token,
       user: {
-        id: result.insertId,
+        id: insertedUser[0].id,
         name,
         email
       }
@@ -99,12 +99,12 @@ router.post('/login', async (req, res) => {
     }
 
     // Buscar usuario
-    const [users] = await pool.execute(
-      'SELECT * FROM users WHERE email = ?',
+    const { rows: foundUser } = await pool.query(
+      'SELECT * FROM users WHERE email = $1',
       [email]
     );
 
-    if (users.length === 0) {
+    if (foundUser.length === 0) {
       return res.status(401).json({ 
         success: false,
         message: 'Email o contraseña incorrectos. Verifica tus credenciales',
@@ -112,7 +112,7 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    const user = users[0];
+    const user = foundUser[0];
 
     // Verificar contraseña
     const isValidPassword = await bcrypt.compare(password, user.password);
@@ -176,12 +176,12 @@ router.put('/users/avatar', auth, async (req, res) => {
     };
 
     // Actualizar en la base de datos
-    const [result] = await pool.execute(
-      'UPDATE users SET avatar_type = ?, avatar_color = ?, avatar_emoji = ?, avatar_url = ? WHERE id = ?',
+    const { rows: updatedUserRows } = await pool.query(
+      'UPDATE users SET avatar_type = $1, avatar_color = $2, avatar_emoji = $3, avatar_url = $4 WHERE id = $5 RETURNING *',
       [updateData.avatar_type, updateData.avatar_color, updateData.avatar_emoji, updateData.avatar_url, userId]
     );
 
-    if (result.affectedRows === 0) {
+    if (updatedUserRows.length === 0) {
       return res.status(404).json({ 
         success: false,
         message: 'Usuario no encontrado',
@@ -189,9 +189,7 @@ router.put('/users/avatar', auth, async (req, res) => {
       });
     }
 
-    // Obtener usuario actualizado
-    const [users] = await pool.execute('SELECT * FROM users WHERE id = ?', [userId]);
-    const updatedUser = users[0];
+    const updatedUser = updatedUserRows[0];
 
     res.json({
       success: true,
@@ -223,9 +221,9 @@ router.get('/profile', auth, async (req, res) => {
     const userId = req.user.id;
 
     // Obtener usuario de la base de datos
-    const [users] = await pool.execute('SELECT * FROM users WHERE id = ?', [userId]);
+    const { rows: userRows } = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
     
-    if (users.length === 0) {
+    if (userRows.length === 0) {
       return res.status(404).json({ 
         success: false,
         message: 'Usuario no encontrado',
@@ -233,7 +231,7 @@ router.get('/profile', auth, async (req, res) => {
       });
     }
 
-    const user = users[0];
+    const user = userRows[0];
 
     res.json({
       success: true,

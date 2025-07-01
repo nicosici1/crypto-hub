@@ -10,8 +10,8 @@ router.get('/', auth, async (req, res) => {
       return res.status(401).json({ message: 'Usuario no autenticado' });
     }
 
-    const [transactions] = await pool.execute(
-      'SELECT * FROM transactions WHERE user_id = ? ORDER BY date DESC',
+    const { rows: transactions } = await pool.query(
+      'SELECT * FROM transactions WHERE user_id = $1 ORDER BY date DESC',
       [req.user.id]
     );
 
@@ -36,8 +36,8 @@ router.get('/', auth, async (req, res) => {
 // Obtener transacciones por cartera
 router.get('/portfolio/:portfolioId', auth, async (req, res) => {
   try {
-    const [transactions] = await pool.execute(
-      'SELECT * FROM transactions WHERE user_id = ? AND portfolio_id = ? ORDER BY date DESC',
+    const { rows: transactions } = await pool.query(
+      'SELECT * FROM transactions WHERE user_id = $1 AND portfolio_id = $2 ORDER BY date DESC',
       [req.user.id, req.params.portfolioId]
     );
     // Anidar objeto coin
@@ -74,11 +74,11 @@ router.post('/', auth, async (req, res) => {
       notes
     } = req.body;
 
-    const [result] = await pool.execute(
+    const { rows: [result] } = await pool.query(
       `INSERT INTO transactions (
         user_id, portfolio_id, coin_id, coin_name, coin_symbol, coin_image,
         type, amount, price, date, fee, notes
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *`,
       [
         req.user.id,
         portfolio_id,
@@ -96,7 +96,7 @@ router.post('/', auth, async (req, res) => {
     );
 
     res.status(201).json({
-      id: result.insertId,
+      id: result.id,
       user_id: req.user.id,
       portfolio_id,
       coin_id,
@@ -127,14 +127,14 @@ router.put('/:id', auth, async (req, res) => {
       notes
     } = req.body;
 
-    const [result] = await pool.execute(
+    const { rows: [result] } = await pool.query(
       `UPDATE transactions 
-       SET amount = ?, price = ?, date = ?, fee = ?, notes = ?
-       WHERE id = ? AND user_id = ?`,
+       SET amount = $1, price = $2, date = $3, fee = $4, notes = $5
+       WHERE id = $6 AND user_id = $7 RETURNING *`,
       [amount, price, date, fee || 0, notes || '', req.params.id, req.user.id]
     );
 
-    if (result.affectedRows === 0) {
+    if (!result) {
       return res.status(404).json({ message: 'Transacción no encontrada' });
     }
 
@@ -148,12 +148,12 @@ router.put('/:id', auth, async (req, res) => {
 // Eliminar transacción
 router.delete('/:id', auth, async (req, res) => {
   try {
-    const [result] = await pool.execute(
-      'DELETE FROM transactions WHERE id = ? AND user_id = ?',
+    const { rows: [result] } = await pool.query(
+      'DELETE FROM transactions WHERE id = $1 AND user_id = $2 RETURNING *',
       [req.params.id, req.user.id]
     );
 
-    if (result.affectedRows === 0) {
+    if (!result) {
       return res.status(404).json({ message: 'Transacción no encontrada' });
     }
 
@@ -171,8 +171,8 @@ router.delete('/', auth, async (req, res) => {
     return res.status(400).json({ error: 'portfolio_id y coin_id son requeridos' });
   }
   try {
-    const [result] = await pool.execute(
-      'DELETE FROM transactions WHERE user_id = ? AND portfolio_id = ? AND coin_id = ?',
+    const { rows: [result] } = await pool.query(
+      'DELETE FROM transactions WHERE user_id = $1 AND portfolio_id = $2 AND coin_id = $3 RETURNING *',
       [req.user.id, portfolio_id, coin_id]
     );
     res.json({ success: true, deleted: result.affectedRows });

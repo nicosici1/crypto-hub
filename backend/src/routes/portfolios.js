@@ -9,8 +9,8 @@ router.get('/', auth, async (req, res) => {
     if (!req.user.id) {
       return res.status(400).json({ message: 'ID de usuario no válido' });
     }
-    const [portfolios] = await pool.execute(
-      'SELECT * FROM portfolios WHERE user_id = ?',
+    const { rows: portfolios } = await pool.query(
+      'SELECT * FROM portfolios WHERE user_id = $1',
       [req.user.id]
     );
     res.json(portfolios);
@@ -25,19 +25,19 @@ router.post('/', auth, async (req, res) => {
     const { name, is_default } = req.body;
     
     if (is_default) {
-      await pool.execute(
-        'UPDATE portfolios SET is_default = false WHERE user_id = ?',
+      await pool.query(
+        'UPDATE portfolios SET is_default = false WHERE user_id = $1',
         [req.user.id]
       );
     }
     
-    const [result] = await pool.execute(
-      'INSERT INTO portfolios (user_id, name, is_default) VALUES (?, ?, ?)',
+    const { rows: [result] } = await pool.query(
+      'INSERT INTO portfolios (user_id, name, is_default) VALUES ($1, $2, $3) RETURNING *',
       [req.user.id, name, is_default || false]
     );
     
     res.status(201).json({
-      id: result.insertId,
+      id: result.id,
       user_id: req.user.id,
       name,
       is_default: is_default || false
@@ -53,18 +53,18 @@ router.put('/:id', auth, async (req, res) => {
     const { name, is_default } = req.body;
     
     if (is_default) {
-      await pool.execute(
-        'UPDATE portfolios SET is_default = false WHERE user_id = ?',
+      await pool.query(
+        'UPDATE portfolios SET is_default = false WHERE user_id = $1',
         [req.user.id]
       );
     }
     
-    const [result] = await pool.execute(
-      'UPDATE portfolios SET name = ?, is_default = ? WHERE id = ? AND user_id = ?',
+    const { rows: [result] } = await pool.query(
+      'UPDATE portfolios SET name = $1, is_default = $2 WHERE id = $3 AND user_id = $4 RETURNING *',
       [name, is_default || false, req.params.id, req.user.id]
     );
     
-    if (result.affectedRows === 0) {
+    if (!result) {
       return res.status(404).json({ message: 'Cartera no encontrada' });
     }
     
@@ -84,8 +84,8 @@ router.put('/:id', auth, async (req, res) => {
 // Eliminar cartera
 router.delete('/:id', auth, async (req, res) => {
   try {
-    const [portfolios] = await pool.execute(
-      'SELECT * FROM portfolios WHERE id = ? AND user_id = ?',
+    const { rows: portfolios } = await pool.query(
+      'SELECT * FROM portfolios WHERE id = $1 AND user_id = $2',
       [req.params.id, req.user.id]
     );
     
@@ -96,8 +96,8 @@ router.delete('/:id', auth, async (req, res) => {
     const portfolio = portfolios[0];
     
     if (portfolio.is_default) {
-      const [allPortfolios] = await pool.execute(
-        'SELECT COUNT(*) as count FROM portfolios WHERE user_id = ?',
+      const { rows: allPortfolios } = await pool.query(
+        'SELECT COUNT(*) as count FROM portfolios WHERE user_id = $1',
         [req.user.id]
       );
       
@@ -112,13 +112,13 @@ router.delete('/:id', auth, async (req, res) => {
     await connection.beginTransaction();
     
     try {
-      await connection.execute(
-        'DELETE FROM transactions WHERE portfolio_id = ? AND user_id = ?',
+      await connection.query(
+        'DELETE FROM transactions WHERE portfolio_id = $1 AND user_id = $2',
         [req.params.id, req.user.id]
       );
       
-      const [result] = await connection.execute(
-        'DELETE FROM portfolios WHERE id = ? AND user_id = ?',
+      const { rows: [result] } = await connection.query(
+        'DELETE FROM portfolios WHERE id = $1 AND user_id = $2 RETURNING *',
         [req.params.id, req.user.id]
       );
       
@@ -145,17 +145,17 @@ router.delete('/:id', auth, async (req, res) => {
 // Establecer cartera como predeterminada
 router.patch('/:id/set-default', auth, async (req, res) => {
   try {
-    await pool.execute(
-      'UPDATE portfolios SET is_default = false WHERE user_id = ?',
+    await pool.query(
+      'UPDATE portfolios SET is_default = false WHERE user_id = $1',
       [req.user.id]
     );
     
-    const [result] = await pool.execute(
-      'UPDATE portfolios SET is_default = true WHERE id = ? AND user_id = ?',
+    const { rows: [result] } = await pool.query(
+      'UPDATE portfolios SET is_default = true WHERE id = $1 AND user_id = $2 RETURNING *',
       [req.params.id, req.user.id]
     );
     
-    if (result.affectedRows === 0) {
+    if (!result) {
       return res.status(404).json({ message: 'Cartera no encontrada' });
     }
     
