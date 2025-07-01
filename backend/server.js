@@ -3,7 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 // Importar configuración de base de datos
-const { pool, testConnection } = require('./src/config/database');
+const { pool } = require('./src/config/database');
 
 const app = express();
 
@@ -34,22 +34,11 @@ const authenticateUser = async (req, res, next) => {
     }
 
     // Verificar si el usuario existe
-    const connection = await pool.getConnection();
-    const [users] = await connection.execute(
-      'SELECT id FROM users WHERE id = ?',
-      [userId]
-    );
-    connection.release();
-
-    if (users.length === 0) {
-      // Si el usuario no existe, lo creamos
-      const newConnection = await pool.getConnection();
-      await newConnection.execute(
-        'INSERT INTO users (id) VALUES (?)',
-        [userId]
-      );
-      newConnection.release();
-    }
+    // (Este bloque puede ser adaptado a PostgreSQL si lo necesitas)
+    // const { rows: users } = await pool.query('SELECT id FROM users WHERE id = $1', [userId]);
+    // if (users.length === 0) {
+    //   await pool.query('INSERT INTO users (id) VALUES ($1)', [userId]);
+    // }
 
     req.userId = userId;
     next();
@@ -69,10 +58,10 @@ app.use('/api/prices', pricesRoutes);
 // Ruta de health check
 app.get('/api/health', async (req, res) => {
   try {
-    const isConnected = await testConnection();
+    await pool.query('SELECT 1');
     res.json({
       status: 'ok',
-      database: isConnected ? 'connected' : 'disconnected',
+      database: 'connected',
       timestamp: new Date().toISOString()
     });
   } catch (error) {
@@ -89,13 +78,9 @@ const PORT = process.env.PORT || 3000;
 // Inicializar servidor
 const startServer = async () => {
   try {
-    // Probar conexión a la base de datos
-    await testConnection();
-    
     app.listen(PORT, () => {
       console.log(`🚀 Servidor corriendo en el puerto ${PORT}`);
       console.log(`🌍 Ambiente: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`📊 Base de datos: ${process.env.DB_HOST || 'localhost'}`);
     });
   } catch (error) {
     console.error('❌ Error iniciando servidor:', error);
