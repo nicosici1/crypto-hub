@@ -1,26 +1,25 @@
 <template>
   <div class="w-full lg:max-w-[1400px] mx-auto">
-    <!-- Barra de filtros -->
-    <div class="flex flex-wrap items-center gap-2 mb-4 mt-4">
-      <button
-        v-for="f in filters"
-        :key="f.value"
-        @click="setFilter(f.value)"
-        :class="[
-          'px-4 py-1 rounded font-semibold transition',
-          filter === f.value
-            ? 'bg-[#AFA] text-[#222] font-bold shadow hover:bg-[#bfffbf]'
-            : 'bg-[#23242a] text-gray-200 hover:bg-[#2d2f36]'
-        ]"
-      >
-        {{ f.label }}
-      </button>
-    </div>
-
     <!-- Texto introductorio profesional -->
     <div class="mt-8 mb-2">
       <h1 class="text-3xl font-extrabold text-white mb-2">Listado de Criptomonedas</h1>
       <p class="text-lg text-gray-400 font-medium">Explora precios, tendencias y tu portafolio en una sola plataforma profesional.</p>
+      <!-- Barra de filtros debajo del título -->
+      <div class="flex flex-wrap items-center gap-2 mt-4 mb-4">
+        <button
+          v-for="f in filters"
+          :key="f.value"
+          @click="setFilter(f.value)"
+          :class="[
+            'px-4 py-1 rounded font-semibold transition',
+            filter === f.value
+              ? 'bg-[#AFA] text-[#222] font-bold shadow hover:bg-[#bfffbf]'
+              : 'bg-[#23242a] text-gray-200 hover:bg-[#2d2f36]'
+          ]"
+        >
+          {{ f.label }}
+        </button>
+      </div>
     </div>
 
     <!-- Desktop Table -->
