@@ -17,71 +17,77 @@
       </button>
     </div>
 
+    <!-- Texto introductorio profesional -->
+    <div class="mt-8 mb-2">
+      <h1 class="text-3xl font-extrabold text-white mb-2">Listado de Criptomonedas</h1>
+      <p class="text-lg text-gray-400 font-medium">Explora precios, tendencias y tu portafolio en una sola plataforma profesional.</p>
+    </div>
+
     <!-- Desktop Table -->
     <div class="overflow-x-auto rounded-xl shadow mt-4 hidden sm:block">
       <table class="min-w-full text-sm text-left font-sans" style="font-family: 'Inter', sans-serif;">
         <thead class="sticky top-0 z-10">
           <tr class="border-b border-[#23242a] bg-[#181c23] rounded-t-xl">
-            <th class="py-3 px-4 text-gray-400 font-semibold"></th>
-            <th class="py-3 px-4 text-gray-400 font-semibold">#</th>
-            <th class="py-3 px-4 text-gray-400 font-semibold">Nombre</th>
-            <th class="py-3 px-4 text-gray-400 font-semibold">Precio</th>
-            <th class="py-3 px-4 text-gray-400 font-semibold">1h %</th>
-            <th class="py-3 px-4 text-gray-400 font-semibold">24h %</th>
-            <th class="py-3 px-4 text-gray-400 font-semibold">7d %</th>
-            <th class="py-3 px-4 text-gray-400 font-semibold">Market Cap</th>
-            <th class="py-3 px-4 text-gray-400 font-semibold">Volumen (24h)</th>
-            <th class="py-3 px-4 text-gray-400 font-semibold">Supply</th>
-            <th class="py-3 px-4 text-gray-400 font-semibold">Últimos 7 días</th>
+            <th class="py-4 px-4 text-gray-400 font-semibold"></th>
+            <th class="py-4 px-4 text-gray-400 font-semibold">#</th>
+            <th class="py-4 px-4 text-gray-400 font-semibold">Nombre</th>
+            <th class="py-4 px-4 text-gray-400 font-semibold">Precio</th>
+            <th class="py-4 px-4 text-gray-400 font-semibold">1h %</th>
+            <th class="py-4 px-4 text-gray-400 font-semibold">24h %</th>
+            <th class="py-4 px-4 text-gray-400 font-semibold">7d %</th>
+            <th class="py-4 px-4 text-gray-400 font-semibold">Market Cap</th>
+            <th class="py-4 px-4 text-gray-400 font-semibold">Volumen (24h)</th>
+            <th class="py-4 px-4 text-gray-400 font-semibold">Supply</th>
+            <th class="py-4 px-4 text-gray-400 font-semibold">Últimos 7 días</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(coin, index) in filteredCoins" :key="coin.id" 
-              :class="[
-                'border-b border-[#23242a] transition cursor-pointer',
-                index % 2 === 0 ? 'bg-[#161b22]' : 'bg-[#1a1d24]',
-                'hover:bg-[#23242a] hover:shadow-lg',
-                'rounded-xl'
-              ]"
-              @click="goToDetail(coin.id)">
-            <td class="py-3 px-4" @click.stop="toggleFavorite(coin.id)">
+                :class="[
+                  'border-b border-[#23242a] transition cursor-pointer',
+                  index % 2 === 0 ? 'bg-[#161b22]' : 'bg-[#1a1d24]',
+                  'hover:bg-[#23242a] hover:shadow-lg',
+                  'rounded-xl'
+                ]"
+                @click="goToDetail(coin.id)">
+            <td class="py-5 px-4 align-middle" @click.stop="toggleFavorite(coin.id)">
               <button :class="isFavorite(coin.id) ? 'text-yellow-400' : 'text-gray-400'">
                 <span v-if="isFavorite(coin.id)">★</span>
                 <span v-else>☆</span>
               </button>
             </td>
-            <td class="py-3 px-4 font-mono">{{ (page - 1) * perPage + index + 1 }}</td>
-            <td class="py-3 px-4 flex items-center gap-2 min-w-[180px]">
+            <td class="py-5 px-4 font-mono align-middle">{{ (page - 1) * perPage + index + 1 }}</td>
+            <td class="py-5 px-4 flex items-center gap-2 min-w-[180px] align-middle">
               <img :src="coin.image" :alt="coin.name" class="w-7 h-7 rounded-full bg-white shadow" />
               <span class="font-semibold text-gray-100">{{ coin.name }}</span>
               <span class="uppercase text-xs text-gray-400 ml-1">{{ coin.symbol }}</span>
             </td>
-            <td class="py-3 px-4 font-mono">${{ formatNumber(coin.current_price) }}</td>
-            <td class="py-3 px-4 font-mono" :class="getClass(coin.price_change_percentage_1h_in_currency) + ' ' + (coin.price_change_percentage_1h_in_currency > 0 ? 'text-[#AFA]' : coin.price_change_percentage_1h_in_currency < 0 ? 'text-[#ea3943]' : 'text-gray-400')">
+            <td class="py-5 px-4 font-mono align-middle">${{ formatNumber(coin.current_price) }}</td>
+            <td class="py-5 px-4 font-mono align-middle" :class="getClass(coin.price_change_percentage_1h_in_currency) + ' ' + (coin.price_change_percentage_1h_in_currency > 0 ? 'text-[#AFA]' : coin.price_change_percentage_1h_in_currency < 0 ? 'text-[#ea3943]' : 'text-gray-400')">
               <span class="inline-flex items-center gap-1">
                 {{ formatPercent(coin.price_change_percentage_1h_in_currency) }}
                 <span v-if="coin.price_change_percentage_1h_in_currency > 0" class="text-xs align-middle">▲</span>
                 <span v-else-if="coin.price_change_percentage_1h_in_currency < 0" class="text-xs align-middle">▼</span>
               </span>
             </td>
-            <td class="py-3 px-4 font-mono" :class="getClass(coin.price_change_percentage_24h_in_currency) + ' ' + (coin.price_change_percentage_24h_in_currency > 0 ? 'text-[#AFA]' : coin.price_change_percentage_24h_in_currency < 0 ? 'text-[#ea3943]' : 'text-gray-400')">
+            <td class="py-5 px-4 font-mono align-middle" :class="getClass(coin.price_change_percentage_24h_in_currency) + ' ' + (coin.price_change_percentage_24h_in_currency > 0 ? 'text-[#AFA]' : coin.price_change_percentage_24h_in_currency < 0 ? 'text-[#ea3943]' : 'text-gray-400')">
               <span class="inline-flex items-center gap-1">
                 {{ formatPercent(coin.price_change_percentage_24h_in_currency) }}
                 <span v-if="coin.price_change_percentage_24h_in_currency > 0" class="text-xs align-middle">▲</span>
                 <span v-else-if="coin.price_change_percentage_24h_in_currency < 0" class="text-xs align-middle">▼</span>
               </span>
             </td>
-            <td class="py-3 px-4 font-mono" :class="getClass(coin.price_change_percentage_7d_in_currency) + ' ' + (coin.price_change_percentage_7d_in_currency > 0 ? 'text-[#AFA]' : coin.price_change_percentage_7d_in_currency < 0 ? 'text-[#ea3943]' : 'text-gray-400')">
+            <td class="py-5 px-4 font-mono align-middle" :class="getClass(coin.price_change_percentage_7d_in_currency) + ' ' + (coin.price_change_percentage_7d_in_currency > 0 ? 'text-[#AFA]' : coin.price_change_percentage_7d_in_currency < 0 ? 'text-[#ea3943]' : 'text-gray-400')">
               <span class="inline-flex items-center gap-1">
                 {{ formatPercent(coin.price_change_percentage_7d_in_currency) }}
                 <span v-if="coin.price_change_percentage_7d_in_currency > 0" class="text-xs align-middle">▲</span>
                 <span v-else-if="coin.price_change_percentage_7d_in_currency < 0" class="text-xs align-middle">▼</span>
               </span>
             </td>
-            <td class="py-3 px-4 font-mono">${{ formatNumber(coin.market_cap) }}</td>
-            <td class="py-3 px-4 font-mono">${{ formatNumber(coin.total_volume) }}</td>
-            <td class="py-3 px-4 font-mono">{{ formatNumber(coin.circulating_supply) }}</td>
-            <td class="py-3 px-4">
+            <td class="py-5 px-4 font-mono align-middle">${{ formatNumber(coin.market_cap) }}</td>
+            <td class="py-5 px-4 font-mono align-middle">${{ formatNumber(coin.total_volume) }}</td>
+            <td class="py-5 px-4 font-mono align-middle">{{ formatNumber(coin.circulating_supply) }}</td>
+            <td class="py-5 px-4 align-middle">
               <svg v-if="coin.sparkline_in_7d && coin.sparkline_in_7d.price" width="80" height="24" viewBox="0 0 80 24">
                 <polyline
                   :points="getSparklinePoints(coin.sparkline_in_7d.price)"
