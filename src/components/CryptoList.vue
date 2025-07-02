@@ -1,6 +1,6 @@
 <template>
+  <GlobalMetricsBar />
   <div class="w-full lg:max-w-[1400px] mx-auto">
-    <GlobalMetricsBar />
     <!-- Texto introductorio profesional -->
     <div class="mt-8 mb-2">
       <h1 class="text-3xl font-extrabold text-white mb-2">Listado de Criptomonedas</h1>
