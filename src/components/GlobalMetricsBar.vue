@@ -1,13 +1,15 @@
 <template>
-  <div class="w-full bg-[#181c23] text-gray-200 text-sm flex flex-wrap items-center gap-x-8 gap-y-2 px-4 py-2 border-b border-[#23242a] shadow-sm select-none">
-    <span>Monedas: <span class="font-bold text-white">{{ metrics.active_cryptocurrencies?.toLocaleString() || '...' }}</span></span>
-    <span>Intercambios: <span class="font-bold text-white">{{ metrics.markets?.toLocaleString() || '...' }}</span></span>
-    <span>Cap. de mercado: <span class="font-bold text-white">{{ formatBillions(metrics.total_market_cap?.usd) }}</span>
-      <span :class="marketCapChangeClass">{{ formatPercent(metrics.market_cap_change_percentage_24h_usd) }}</span>
-    </span>
-    <span>Volumen en 24 h: <span class="font-bold text-white">{{ formatBillions(metrics.total_volume?.usd) }}</span></span>
-    <span>Dominio: <span class="font-bold text-yellow-400">BTC {{ formatPercent(metrics.market_cap_percentage?.btc, 1) }}</span> <span class="font-bold text-blue-400">ETH {{ formatPercent(metrics.market_cap_percentage?.eth, 1) }}</span></span>
-    <span v-if="metrics.eth_gas_price">⛽ Gas: <span class="font-bold text-[#AFA]">{{ metrics.eth_gas_price }}</span> GWEI</span>
+  <div class="w-full bg-[#181c23] border-b border-[#23242a] shadow-sm select-none">
+    <div class="max-w-[1400px] mx-auto px-4 flex flex-wrap items-center gap-x-8 gap-y-2 py-2 text-sm text-gray-200 font-medium">
+      <span>Monedas: <span class="font-bold text-white">{{ metrics.active_cryptocurrencies?.toLocaleString() || '...' }}</span></span>
+      <span>Intercambios: <span class="font-bold text-white">{{ metrics.markets?.toLocaleString() || '...' }}</span></span>
+      <span>Cap. de mercado: <span class="font-bold text-white">{{ formatBillions(metrics.total_market_cap?.usd) }}</span>
+        <span :class="marketCapChangeClass">{{ formatPercent(metrics.market_cap_change_percentage_24h_usd) }}</span>
+      </span>
+      <span>Volumen en 24 h: <span class="font-bold text-white">{{ formatBillions(metrics.total_volume?.usd) }}</span></span>
+      <span>Dominio: <span class="font-bold text-yellow-400">BTC {{ formatPercent(metrics.market_cap_percentage?.btc, 1) }}</span> <span class="font-bold text-blue-400">ETH {{ formatPercent(metrics.market_cap_percentage?.eth, 1) }}</span></span>
+      <span v-if="metrics.eth_gas_price">⛽ Gas: <span class="font-bold text-[#AFA]">{{ metrics.eth_gas_price }}</span> GWEI</span>
+    </div>
   </div>
 </template>
 
@@ -61,4 +63,15 @@ export default {
 </script>
 
 <style scoped>
+@media (max-width: 900px) {
+  .max-w-\[1400px\] {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+  div.flex {
+    gap: 0.5rem !important;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
 </style> 
