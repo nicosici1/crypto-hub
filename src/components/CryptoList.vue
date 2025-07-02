@@ -1,5 +1,6 @@
 <template>
   <div class="w-full lg:max-w-[1400px] mx-auto">
+    <GlobalMetricsBar />
     <!-- Texto introductorio profesional -->
     <div class="mt-8 mb-2">
       <h1 class="text-3xl font-extrabold text-white mb-2">Listado de Criptomonedas</h1>
@@ -168,6 +169,7 @@
 
 <script>
 import { FavoritesService } from '../services/favorites';
+import GlobalMetricsBar from './GlobalMetricsBar.vue';
 
 // Caché global para evitar requests duplicados
 const listCache = new Map();
@@ -175,6 +177,7 @@ const LIST_CACHE_DURATION = 3 * 60 * 1000; // 3 minutos
 
 export default {
   name: 'CryptoList',
+  components: { GlobalMetricsBar },
   data() {
     return {
       coins: [],
