@@ -348,36 +348,42 @@ export default {
         window.dispatchEvent(new Event('storage'));
       } catch (error) {
         console.error('Error al actualizar favoritos:', error);
-        alert('Error al actualizar favoritos. Por favor, intenta de nuevo.');
+        alert('Error al actualizar favoritos');
       }
     },
     isFavorite(id) {
       return this.favorites.includes(id);
     },
+    goToDetail(id) {
+      this.$router.push(`/crypto/${id}`);
+    },
     getSparklinePoints(prices) {
       if (!prices || prices.length === 0) return '';
-      const max = Math.max(...prices);
-      const min = Math.min(...prices);
-      const norm = prices.map(p => (p - min) / (max - min || 1));
-      return norm.map((v, i) => `${i * (80 / (prices.length - 1))},${24 - v * 20}`).join(' ');
+      
+      const width = 80;
+      const height = 24;
+      const padding = 2;
+      const usableWidth = width - (padding * 2);
+      const usableHeight = height - (padding * 2);
+      
+      const minPrice = Math.min(...prices);
+      const maxPrice = Math.max(...prices);
+      const priceRange = maxPrice - minPrice;
+      
+      return prices.map((price, index) => {
+        const x = padding + (index / (prices.length - 1)) * usableWidth;
+        const y = padding + usableHeight - ((price - minPrice) / priceRange) * usableHeight;
+        return `${x},${y}`;
+      }).join(' ');
     },
-    goToDetail(id) {
-      this.$router.push(`/moneda/${id}`);
-    },
-    async retryFetch() {
-      await this.fetchCoins();
+    retryFetch() {
+      this.retryCount = 0;
+      this.fetchCoins();
     }
   },
-  watch: {
-    filter(val) {
-      if (val === 'favorites') {
-        this.fetchFavorites();
-      }
-    }
-  },
-  mounted() {
-    this.fetchCoins();
-    this.fetchFavorites();
+  async mounted() {
+    await this.fetchFavorites();
+    await this.fetchCoins();
   }
 }
 </script>
